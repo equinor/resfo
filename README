@@ -41,3 +41,59 @@ The following keywords are supported by the collection of parsers in
 * SKIP, SKIP100, SKIP300, ENDSKIP
 * COLUMNS
 * MESSAGE
+
+In addition records of the form
+
+```
+KEYWORD
+ 1 2 3 4 /
+```
+
+can be read by adding subparsers of the form
+`SimpleDataRecord(keyword="KEYWORD")`, and data records of the form
+
+```
+DKEYWORD
+ 1 2 3 4 /
+ 5 6 7 8 /
+/
+```
+
+are read by `DoubleDataRecord(keyword="DKEYWORD")`. Some records
+require that you know a part of the parsed state in order to know how many
+subrecords to read:
+
+```
+THREEREC
+ 1 2 /
+ 4 5 /
+ 6 7 /
+```
+
+In that case, you can use the `FixedSizeDataRecord(keyword="THREEREC",
+state_lookup=get_number_of_records)` where `get_number_of_records` returns the
+number of records when passed the subparser containing the state:
+
+```
+def get_number_of_records(subparsers):
+    for subparser in subparsers:
+        if isinstance(subparser, ThisSubparserContainsTheRecord):
+            return subparser.the_number_of_records
+    raise ValueError("missing dependent subparser")
+```
+
+Subparsers of commonly used keywords can be found in
+`ecl_data_io.subparsers.COMMON_SUBPARSERS`, and a reasonable
+parser of `.DATA` files can be gotten by running
+
+```
+ecl_data_io.parser(filepath, subparsers=DEFAULT_SUBPARSERS+COMMON_SUBPARSERS, strict=True)
+```
+
+Note: The `COMMON_SUBPARSERS` take a strict approach
+to terminating slashes. Some keywords have optional
+terminating slashes in eclipse100. For simplicity the
+`COMMON_SUBPARSERS` assumes terminating slashes are
+always present.
+
+Note: COMMON_SUBPARSERS skips as if using eclipse300.
