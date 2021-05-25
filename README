@@ -1,0 +1,43 @@
+ecl-data-io
+===========
+
+Extensible parser of the eclipse data input format. This
+is a native python parser library for the `.DATA` format used
+by many petroleum field simulators. Note that this library is
+
+* Not feature complete, but extensible
+* Does not adhere to a single specification, but is flexible
+* Can read included files ('.INC' or '.grdecl'), but only
+  when the included file follows reasonable conventions.
+
+Overview of parsing
+===================
+
+The parser is based on being a collection of subparsers with their own state.
+Each subparser is a generator of `Record`s.  These are activated by keywords,
+so, for instance, when the parser encounters the `SKIP` keyword, the
+`SkipSubparser.parse` generator is called (which has access to the state of all
+other subparsers). It then consumes from the file until the `ENDSKIP` keyword
+is encountered and yields a `SkippedSection` record. The parser then looks at
+keyword on the next line to see which subparser should be called next.
+
+## Non-strict parsing
+
+Since any number of keywords can occurr in a `.DATA` file, we support
+non-strict parsing through the `ecl_data_io.parse(strict=False)` parameter,
+meaning lines not containing a recognized keyword are ignored until a
+recognized keyword is reached.  Note that this might fail to correctly parse a
+file. A warning is given when non-strict parsing is encountered.
+
+Default supported keywords
+==========================
+
+Comments of the form '--' are built in, and can only be turned off (or changed) by setting
+the `ecl_data_io.parse(comment_token='--')` to `None`.
+
+The following keywords are supported by the collection of parsers in
+`ecl_data_io.subparsers.DEFAULT_SUBPARSERS`:
+
+* SKIP, SKIP100, SKIP300, ENDSKIP
+* COLUMNS
+* MESSAGE
