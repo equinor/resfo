@@ -4,12 +4,8 @@ from typing import List
 
 from ecl_data_io.errors import ParsingError
 
+from .record import Record
 from .subparser import SubParser
-
-
-@dataclass
-class OneLineRecord:
-    message: str
 
 
 class OneLineSubParser(SubParser):
@@ -22,8 +18,14 @@ class OneLineSubParser(SubParser):
 
     def parse(self, super_parser, lines):
         try:
-            yield OneLineRecord(next(lines))
+            yield Record(self.keyword, next(lines))
         except StopIteration as e:
             raise ParsingError(
                 f"Reached end of file while parsing {self.keyword}"
             ) from e
+
+
+one_line_keywords = [
+    "MESSAGE",
+    "TITLE",
+]

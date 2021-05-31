@@ -3,13 +3,8 @@ from itertools import takewhile
 
 from ecl_data_io.errors import ParsingError
 
+from .record import Record
 from .subparser import SubParser
-
-
-@dataclass
-class SkipRecord:
-    keyword: str
-    skipped_section: str
 
 
 class SkipSubParser:
@@ -26,7 +21,7 @@ class SkipSubParser:
             while True:
                 line = next(lines)
                 if line.startswith("ENDSKIP"):
-                    yield SkipRecord(self.keyword, contents)
+                    yield Record(self.keyword, contents)
                     return
                 contents += line + "\n"
         except StopIteration as e:

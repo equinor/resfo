@@ -2,13 +2,9 @@ from dataclasses import dataclass
 
 from ecl_data_io.errors import ParsingError
 
+from .record import Record
+from .split_line import split_line
 from .subparser import SubParser
-
-
-@dataclass
-class ColumnsRecord:
-    left: int
-    right: int
 
 
 class ColumnsSubParser(SubParser):
@@ -20,7 +16,7 @@ class ColumnsSubParser(SubParser):
         try:
             contents = []
             while True:
-                for word in next(lines).split():
+                for word in split_line(next(lines)):
                     if word[0] == "/":
                         if len(contents != 2):
                             raise ParsingError("Expected 2 values in columns record")
@@ -28,7 +24,7 @@ class ColumnsSubParser(SubParser):
                         right = int(contents[1])
                         super_parser.col_start = left
                         super_parser.col_end = right
-                        yield ColumnsRecord(left, right)
+                        yield Record("COLUMN", [left, right])
                         return
 
         except StopIteration as e:
