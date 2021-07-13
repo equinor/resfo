@@ -1,43 +1,108 @@
 ecl-data-io
 ===========
 
-Extensible parser of the eclipse data input format. This
-is a native python parser library for the `.DATA` format used
-by many petroleum field simulators. Note that this library is
+Parser for the binary ecl format, such as found in output files with
+extensions .UNRST, .EGRID, .INIT, .UNRST etc. and also the corresponding
+ascii formats such as .FUNRST, .FEGRID, .FINIT, .FUNRST etc.
 
-* Not feature complete, but extensible
-* Does not adhere to a single specification, but is flexible
-* Can read included files ('.INC' or '.grdecl'), but only
-  when the included file follows reasonable conventions.
+The file format comes in two forms: formatted or unformatted, which are
+ascii and binary respectively (the terminology comes from fortran).
 
-Overview of parsing
-===================
+The files consists of named arrays, starting with a 8 character ascii
+keyword name, followed by a 4 byte signed integer which is the length
+of the array, then a 4 character keyword describing the data type
+of elements in the array. Each file consists of a sequence of such arrays.
 
-The parser is based on being a collection of subparsers with their own state.
-Each subparser is a generator of `Record`s.  These are activated by keywords,
-so, for instance, when the parser encounters the `SKIP` keyword, the
-`SkipSubparser.parse` generator is called (which has access to the state of all
-other subparsers). It then consumes from the file until the `ENDSKIP` keyword
-is encountered and yields a `SkippedSection` record. The parser then looks at
-keyword on the next line to see which subparser should be called next.
+ecl-data-io does not interpret the output, but simply generate the list of
+arrays:
 
-## Non-strict parsing
+```
+import ecl_data_io as eclio
 
-Since any number of keywords can occurr in a `.DATA` file, we support
-non-strict parsing through the `ecl_data_io.parse(strict=False)` parameter,
-meaning lines not containing a recognized keyword are ignored until a
-recognized keyword is reached.  Note that this might fail to correctly parse a
-file. A warning is given when non-strict parsing is encountered.
+for kw, arr in eclio.read("my_grid.egrid"):
+    print(kw)
 
-Default supported keywords
-==========================
+>>> "FILEHEAD"
+>>> "GRIDHEAD"
+>>> "COORD"
+>>> "ZCORN"
+>>> "ACTNUM"
+>>> "MAPAXES"
+```
 
-Comments of the form '--' are built in, and can only be turned off (or changed) by setting
-the `ecl_data_io.parse(comment_token='--')` to `None`.
 
-The following keywords are supported by the collection of parsers in
-`ecl_data_io.subparsers.DEFAULT_SUBPARSERS`:
+Similarly, the `write` function will generate such files:
 
-* SKIP, SKIP100, SKIP300, ENDSKIP
-* COLUMNS
-* MESSAGE
+```
+import ecl_data_io as eclio
+
+eclio.write("my_grid.egrid", {"FILEHEAD": [...], "GRIDHEAD": [10,10,10]})
+```
+
+The default format is is binary (unformatted), but it is possible to
+read and write ascii aswell:
+
+
+```
+import ecl_data_io as eclio
+
+eclio.write(
+    "my_grid.egrid",
+    {"FILEHEAD": [...], "GRIDHEAD": [10,10,10]},
+    fileformat=eclio.Format.FORMATTED
+)
+```
+
+lazy reading
+------------
+
+It is also possible to read through the file without loading
+all arrays into memory, ie. lazily:
+
+```
+import ecl_data_io as eclio
+
+for item in eclio.lazy_read("my_grid.egrid"):
+    print(item.read_keyword())
+
+>>> "FILEHEAD"
+>>> "GRIDHEAD"
+>>> "COORD"
+>>> "ZCORN"
+>>> "ACTNUM"
+>>> "MAPAXES"
+```
+
+Note that `eclio.lazy_read` in the above example is a generator of array
+entries and the file will be closed once the generator is finished. Therefore,
+care will have to be taken in when arrays/keywords are read from the entries.
+For better control, one can pass the opened file:
+
+```
+import ecl_data_io as eclio
+
+with open("my_grid.egrid", "rb") as f:
+    generator = eclio.lazy_read("my_grid.egrid")
+    item = next(generator)
+    print(item.read_keyword())
+
+>>> "FILEHEAD"
+```
+
+
+Duplicate keywords
+--------------------------
+
+The simple write function works best for keywords with unique
+names, however, if the file has multiple arays with the same name,
+list of tuples can be used:
+
+
+import ecl_data_io as eclio
+
+contents = [
+ ("COORD", [1.0, ...]),
+ ("COORD", [2.0, ...]),
+]
+
+eclio.write("my/file.grdecl", contents)
