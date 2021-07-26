@@ -11,7 +11,7 @@ setup(
     name="ecl-data-io",
     author="Equinor",
     author_email="fg_sib-scout@equinor.com",
-    description="A (lazy) parser and writer for the ecl binary format.",
+    description="A (lazy) parser and writer for the ecl output format.",
     use_scm_version=True,
     url="https://github.com/equinor/ecl-data-io",
     long_description=get_long_description(),
