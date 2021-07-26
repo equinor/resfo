@@ -17,7 +17,7 @@ static_item_sizes = {
     b"DOUB": 8,
     b"CHAR": 8,
     b"MESS": 0,
-    b"X231": None,
+    b"X231": 0,
 }
 
 

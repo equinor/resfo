@@ -126,8 +126,12 @@ class UnformattedEclArray(EclArray):
         if self._length == 0:
             type_len = 0
         if type_len is None:
+            raise EclParsingError(f"Unexpected item type {self._type}")
+        if type_len <= 0 and self._length != 0:
             raise EclParsingError(
-                f"Unexpected item type {self._type} of keyword {self._keyword}"
+                f"Found keyword of type {self._type} which"
+                f"has item length {type_len} which requires 0 number of"
+                f"elements, but found {self._length} amount of elements."
             )
 
         g_len = group_len(self.type)
