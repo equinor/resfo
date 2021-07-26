@@ -1,3 +1,4 @@
+import sys
 from os.path import join
 
 import hypothesis.strategies as st
@@ -40,6 +41,9 @@ def same_keyword(a, b):
     return a.strip() == b.strip()
 
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 7), reason="Hypothesis requires python3.7 or higher"
+)
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(file_format=formats, data=ecl_datas)
 def test_read_write(filelike, file_format, data):
