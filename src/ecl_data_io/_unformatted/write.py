@@ -45,6 +45,8 @@ def cast_array_to_ecl(arr):
 def write_np_array(stream, arr):
     arr = np.asarray(arr)
     ecl_type = ecl_types.from_np_dtype(arr)
+    if ecl_type == b"C008":
+        raise ValueError()
     g_len = group_len(ecl_type)
     to_write = len(arr)
     type_len = item_size(ecl_type)

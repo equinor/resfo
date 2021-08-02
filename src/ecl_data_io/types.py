@@ -71,12 +71,20 @@ def from_np_dtype(array):
         max_len = max(len(s) for s in array)
         if max_len > 99:
             raise ValueError("ecl filetype only supports string length up to 99")
+        if max_len == 8:
+            return b"CHAR"
         return b"C0" + str(max_len).zfill(2).encode("ascii")
     if dtype.char == "U" and 0 < dtype.itemsize < 4 * 99:
-        return b"C0" + str(dtype.itemsize // 4).zfill(2).encode("ascii")
+        size = dtype.itemsize // 4
+        if size == 8:
+            return b"CHAR"
+        return b"C0" + str(size).zfill(2).encode("ascii")
     if dtype.char == "S" and 0 < dtype.itemsize < 99:
-        return b"C0" + str(dtype.itemsize).zfill(2).encode("ascii")
-    raise ValueError(f"Could not convert numpy type {dtype}")
+        size = dtype.itemsize
+        if size == 8:
+            return b"CHAR"
+        return b"C0" + str(size).zfill(2).encode("ascii")
+    raise ValueError(f"Could not convert numpy type {dtype} in {array}")
 
 
 def is_valid_type(type_str):
