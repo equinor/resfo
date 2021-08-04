@@ -1,4 +1,7 @@
-from ecl_data_io._unformatted.common import group_len, item_size
+import hypothesis.strategies as st
+import pytest
+from ecl_data_io._unformatted.common import bytes_in_array, group_len, item_size
+from hypothesis import given
 
 
 def test_group_len():
@@ -21,3 +24,27 @@ def test_item_size():
     assert item_size(b"DOUB") == 8
     assert item_size(b"MESS") == 0
     assert item_size(b"x231") is None
+
+
+def test_bytes_in_array():
+    assert bytes_in_array(1000, b"DOUB") == 8008
+    assert bytes_in_array(1000, b"REAL") == 4008
+    assert bytes_in_array(900, b"REAL") == 900 * 4 + 8
+    assert bytes_in_array(1100, b"REAL") == 1000 * 4 + 8 + 100 * 4 + 8
+    assert bytes_in_array(0, b"REAL") == 0
+
+
+@pytest.mark.parametrize(
+    "item_type",
+    [
+        b"C032",
+        b"CHAR",
+        b"INTE",
+        b"REAL",
+        b"LOGI",
+        b"DOUB",
+    ],
+)
+@given(length=st.integers(min_value=1, max_value=104))
+def test_bytes_in_array_one_group(item_type, length):
+    assert bytes_in_array(length, item_type) == 8 + length * item_size(item_type)

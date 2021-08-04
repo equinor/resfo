@@ -29,3 +29,19 @@ def item_size(type_keyword):
     if type_keyword[0:2] == b"C0":
         return int(type_keyword[2:4].decode("ascii"))
     return static_item_sizes.get(type_keyword, None)
+
+
+def bytes_in_array(array_length, item_type):
+    """
+    :param array_length: Number of items in the array
+    :param item_type: Type of items in the array
+    :returns: Number of bytes used to store an array of
+        given type and length
+    """
+    g_len = group_len(item_type)
+    full_groups = array_length // g_len
+
+    if array_length % g_len:
+        return (full_groups + 1) * 8 + array_length * item_size(item_type)
+    else:
+        return full_groups * 8 + array_length * item_size(item_type)
