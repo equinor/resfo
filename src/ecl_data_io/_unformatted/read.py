@@ -1,9 +1,8 @@
 import io
 
-import numpy as np
-
 import ecl_data_io.types as ecl_io_types
-from ecl_data_io._unformatted.common import group_len, item_size
+import numpy as np
+from ecl_data_io._unformatted.common import bytes_in_array, group_len, item_size
 from ecl_data_io.array_entry import EclArray
 from ecl_data_io.errors import EclParsingError
 
@@ -61,7 +60,9 @@ class UnformattedEclArray(EclArray):
         """
         value = int.from_bytes(self.stream.read(4), byteorder="big", signed=True)
         if value != expected_value:
-            raise EclParsingError(f"Unexpected size of record {value}")
+            raise EclParsingError(
+                f"Unexpected size of record {value} ({value.to_bytes(4, byteorder='big', signed=True)})"
+            )
 
     def _read_keyword(self):
         """
@@ -102,7 +103,9 @@ class UnformattedEclArray(EclArray):
             return
         start_marker_value = int.from_bytes(start_marker, byteorder="big", signed=True)
         if start_marker_value != 16:
-            raise EclParsingError(f"Unexpected size of record {start_marker_value}")
+            raise EclParsingError(
+                f"Unexpected size of record {start_marker_value} ({start_marker})"
+            )
         self._read_keyword()
         self._length = self._read_length()
         self._read_type()
@@ -133,12 +136,7 @@ class UnformattedEclArray(EclArray):
                 f"has item length {type_len} which requires 0 number of"
                 f"elements, but found {self._length} amount of elements."
             )
-
-        g_len = group_len(self.type)
-        num_groups = self._length // g_len + 1
-        if self._length == 0:
-            num_groups = 0
-        bytes_to_skip = num_groups * 8 + self._length * type_len
+        bytes_to_skip = bytes_in_array(self._length, self.type)
 
         self._data_start = self.stream.tell()
         self.stream.seek(bytes_to_skip, io.SEEK_CUR)
