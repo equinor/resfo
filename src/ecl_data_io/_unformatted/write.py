@@ -62,17 +62,18 @@ def write_np_array(stream, arr):
         stream.write(bytes_to_write.to_bytes(4, byteorder="big", signed=True))
 
 
-def write_str_list(stream, str_list):
+def write_str_list(stream, str_list, ecl_type):
+    str_size = item_size(ecl_type)
     if len(str_list) == 0:
         return
     max_len = max(len(s) for s in str_list)
     if max_len > 99:
         raise ValueError("Ecl files does not support strings of length > 99")
-    str_list = [s.ljust(max_len) for s in str_list]
-    if max_len == 8:
-        ecl_type = b"CHAR"
-    else:
-        ecl_type = b"C0" + str(max_len).encode("ascii")
+    if max_len > str_size:
+        raise ValueError(
+            f"Inconsistent type size, have {str_size} type but longest string is {max_len}"
+        )
+    str_list = [s.ljust(str_size) for s in str_list]
     try:
         byte_str_list = [
             s.encode("ascii") if isinstance(s, str) else s for s in str_list
@@ -102,7 +103,7 @@ def write_array_like(stream, keyword, array_like):
     ecl_type = ecl_types.from_np_dtype(array)
     write_array_header(stream, keyword, ecl_type, len(array))
     if np.issubdtype(array.dtype, np.str_) or array.dtype.char == "S":
-        write_str_list(stream, array.tolist())
+        write_str_list(stream, array.tolist(), ecl_type)
     else:
         write_np_array(stream, array)
 

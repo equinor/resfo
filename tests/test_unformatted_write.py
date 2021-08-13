@@ -95,7 +95,7 @@ def test_write_str_list_too_long():
     str_list = ["a" * 200]
 
     with pytest.raises(ValueError, match="strings of length"):
-        ecl_unf_write.write_str_list(buf, str_list)
+        ecl_unf_write.write_str_list(buf, str_list, b"CHAR")
 
 
 def test_write_str_list_non_ascii():
@@ -103,14 +103,14 @@ def test_write_str_list_non_ascii():
     str_list = ["\u2167"]
 
     with pytest.raises(ValueError, match="non-ascii"):
-        ecl_unf_write.write_str_list(buf, str_list)
+        ecl_unf_write.write_str_list(buf, str_list, b"CHAR")
 
 
 def test_write_str_list_char():
     buf = io.BytesIO()
     str_list = ["a" * 8, "b" * 4]
 
-    ecl_unf_write.write_str_list(buf, str_list)
+    ecl_unf_write.write_str_list(buf, str_list, b"CHAR")
 
     marker = (16).to_bytes(4, byteorder="big", signed=True)
 
