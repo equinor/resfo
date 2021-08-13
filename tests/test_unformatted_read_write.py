@@ -12,6 +12,7 @@ from ecl_data_io._unformatted.write import unformatted_write
     "data",
     [
         [("KEYWORD1", [1, 2, 3])],
+        [("KEYWORD1", [""])],
         [
             ("KEYWORD1", [1, 2, 3]),
             ("22222222", np.array([1.1, 2.1, 3.1])),
@@ -39,6 +40,9 @@ def test_unformatted_write(container, data):
     for (kw, arr), okw, oarr in zip(data, out_keywords, out_arrays):
         assert kw == okw
         if isinstance(arr[0], str):
-            assert np.array_equal([el.encode("ascii") for el in arr], oarr)
+            for el, elo in zip(arr, oarr):
+                elo = elo.decode("ascii")
+                assert elo.startswith(el)
+                assert all(c.isspace() for c in elo[len(el) :])
         else:
             assert np.array_equal(arr, oarr)
