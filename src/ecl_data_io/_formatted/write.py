@@ -16,9 +16,9 @@ def write_str_list(stream, str_list):
     str_list = [s.decode("ascii") if not isinstance(s, str) else s for s in str_list]
 
     for i, string in enumerate(str_list):
-        stream.write(f" '{string.ljust(max_len)}'")
-        if i % 4 == 3:
+        if i % 7 == 0:
             stream.write("\n")
+        stream.write(f" '{string.ljust(max_len)}'")
 
 
 def write_np_array(stream, array, ecl_type):
@@ -32,27 +32,27 @@ def write_np_array(stream, array, ecl_type):
     """
     if ecl_type == b"LOGI":
         for i, ele in enumerate(array):
-            if ele:
-                stream.write(" T")
-            else:
-                stream.write(" F")
-            if i % 4 == 3:
+            if i % 25 == 0:
                 stream.write("\n")
+            if ele:
+                stream.write("  T")
+            else:
+                stream.write("  F")
     elif ecl_type == b"REAL":
         for i, ele in enumerate(array):
-            stream.write(" {:16.8E}".format(ele))
-            if i % 4 == 3:
+            if i % 4 == 0:
                 stream.write("\n")
+            stream.write(" {:>16.8E}".format(ele))
     elif ecl_type == b"DOUB":
         for i, ele in enumerate(array):
-            stream.write(" {:22.14E}".format(ele))
-            if i % 4 == 3:
+            if i % 3 == 0:
                 stream.write("\n")
+            stream.write(" {:>22.14E}".format(ele).replace("E", "D"))
     elif ecl_type == b"INTE":
         for i, ele in enumerate(array):
-            stream.write(" {:10d}".format(ele))
-            if i % 4 == 3:
+            if i % 6 == 0:
                 stream.write("\n")
+            stream.write(" {:>11d}".format(ele))
 
 
 def write_entry(stream, keyword, array_like):
@@ -66,7 +66,7 @@ def write_entry(stream, keyword, array_like):
     array = np.asarray(array_like)
     ecl_type = ecl_types.from_np_dtype(array)
     stream.write(
-        f"'{keyword.ljust(8)}' {len(array)} '{ecl_type.decode('ascii').ljust(4)}'\n"
+        f" '{keyword.ljust(8)}' {' {:>10d}'.format(len(array))} '{ecl_type.decode('ascii').ljust(4)}'"
     )
 
     if np.issubdtype(array.dtype, np.str_) or array.dtype.char == "S":
