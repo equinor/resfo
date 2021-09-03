@@ -87,6 +87,32 @@ class FormattedEclArray(EclArray):
 
         return word
 
+    def _read_number(self):
+        """
+        Read one number from the stream and returns it as a string.
+        """
+        drop_while_space(self.stream)
+        word = ""
+
+        current_char = self.stream.read(1)
+        while current_char in "0123456789DE.+-":
+            word += current_char
+            current_char = self.stream.read(1)
+            if not current_char:
+                raise EclParsingError(
+                    f"Reached end-of-file while reading number {word} at {self.stream.tell()}"
+                )
+
+        if not current_char.isspace() and current_char:
+            raise EclParsingError(
+                f"Expected space after number at {self.stream.tell()} got {current_char}"
+            )
+
+        if not word:
+            raise EclParsingError(f"Could not read number at {self.stream.tell()}")
+
+        return word.replace("D", "E")
+
     def _read_keyword(self):
         self._keyword = self._read_quote_separated()
 
@@ -110,11 +136,9 @@ class FormattedEclArray(EclArray):
         elif self._type == b"LOGI":
             return np.array([self._read_logical() for i in range(self._length)])
         else:
-            return np.fromfile(
-                self.stream,
-                sep=" ",
-                count=self._length,
-                dtype=ecl_types.to_np_type(self._type).newbyteorder("<"),
+            return np.array(
+                [self._read_number() for i in range(self._length)],
+                dtype=ecl_types.to_np_type(self._type),
             )
 
     def _read(self):
