@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 
 def get_long_description() -> str:
-    return Path("README").read_text(encoding="utf8")
+    return Path("README.md").read_text(encoding="utf8")
 
 
 setup(
