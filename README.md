@@ -1,9 +1,9 @@
 ecl-data-io
 ===========
 
-Parser for the binary ecl format, such as found in output files with
-extensions .UNRST, .EGRID, .INIT, .UNRST etc. and also the corresponding
-ascii formats such as .FUNRST, .FEGRID, .FINIT, .FUNRST etc.
+Parser for the ecl output format, such as found in files with
+extensions .UNRST, .EGRID, .INIT, etc. and also the corresponding
+ascii files with extension .FUNRST, .FEGRID, .FINIT, etc.
 
 The file format comes in two forms: formatted or unformatted, which are
 ascii and binary respectively (the terminology comes from fortran).
@@ -13,8 +13,7 @@ keyword name, followed by a 4 byte signed integer which is the length
 of the array, then a 4 character keyword describing the data type
 of elements in the array. Each file consists of a sequence of such arrays.
 
-ecl-data-io does not interpret the output, but simply generate the list of
-arrays:
+ecl-data-io does not interpret the output, but simply give you the arrays:
 
 ```
 import ecl_data_io as eclio
@@ -98,6 +97,7 @@ names, however, if the file has multiple arays with the same name,
 list of tuples can be used:
 
 
+```
 import ecl_data_io as eclio
 
 contents = [
@@ -106,3 +106,4 @@ contents = [
 ]
 
 eclio.write("my/file.grdecl", contents)
+```
