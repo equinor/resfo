@@ -93,6 +93,17 @@ class FormattedEclArray(EclArray):
     def _read_type(self):
         self._type = self._read_quote_separated().encode("ascii")
 
+    def _read_double(self):
+        current_char = self.stream.read(1)
+        while current_char.isspace():
+            current_char = self.stream.read(1)
+        buf = ""
+        while not current_char.isspace():
+            buf += current_char
+            current_char = self.stream.read(1)
+
+        return float(buf.replace("D", "E"))
+
     def _read_length(self):
         drop_while_space(self.stream)
         self._length = np.fromfile(
@@ -109,6 +120,11 @@ class FormattedEclArray(EclArray):
             return np.array([self._read_quote_separated() for i in range(self._length)])
         elif self._type == b"LOGI":
             return np.array([self._read_logical() for i in range(self._length)])
+        elif self._type == b"DOUB":
+            return np.array(
+                [self._read_double() for i in range(self._length)],
+                dtype=np.float64,
+            )
         else:
             return np.fromfile(
                 self.stream,

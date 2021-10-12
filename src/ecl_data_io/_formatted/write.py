@@ -45,7 +45,8 @@ def write_np_array(stream, array, ecl_type):
                 stream.write("\n")
     elif ecl_type == b"DOUB":
         for i, ele in enumerate(array):
-            stream.write(" {:22.14E}".format(ele))
+            value = " {:22.14E}".format(ele)
+            stream.write(value.replace("E", "D"))
             if i % 4 == 3:
                 stream.write("\n")
     elif ecl_type == b"INTE":
