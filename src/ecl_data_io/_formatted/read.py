@@ -125,6 +125,12 @@ class FormattedEclArray(EclArray):
                 [self._read_double() for i in range(self._length)],
                 dtype=np.float64,
             )
+        elif self._type == b"MESS":
+            if self._length != 0:
+                raise EclParsingError(
+                    "MESS type array given with length != 0 at {self.stream.tell()}"
+                )
+            return np.zeros((0,))
         else:
             return np.fromfile(
                 self.stream,
