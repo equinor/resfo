@@ -21,6 +21,15 @@ class UnformattedEclArray(EclArray):
             self._read()
         return self._keyword.decode("ascii")
 
+    def read_length(self):
+        """
+        Read the length from the unformatted ecl file.
+        :returns: The length of the array in number of entries.
+        """
+        if self._length is None:
+            self._read()
+        return self._length
+
     def read_array(self):
         """
         Read the array from the unformatted ecl file.

@@ -48,6 +48,14 @@ class EclArray(ABC):
         pass
 
     @abstractmethod
+    def read_length(self):
+        """
+        Read the length from the ecl file.
+        :returns: The length of the array in number of entries.
+        """
+        pass
+
+    @abstractmethod
     def read_array(self):
         """
         Read the array from the unformatted ecl file.
