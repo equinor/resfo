@@ -44,6 +44,15 @@ class FormattedEclArray(EclArray):
             self._read()
         return self._keyword
 
+    def read_length(self):
+        """
+        Read the length from the formatted ecl file.
+        :returns: The length of the array in number of entries.
+        """
+        if self._length is None:
+            self._read()
+        return self._length
+
     def read_array(self):
         if self._keyword is None:
             self._read()

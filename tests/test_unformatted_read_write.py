@@ -36,6 +36,9 @@ def test_unformatted_write(container, data):
     out_records = list(UnformattedEclArray.parse(buf))
     out_keywords = [r.read_keyword() for r in out_records]
     out_arrays = [r.read_array() for r in out_records]
+    out_lengths = [r.read_length() for r in out_records]
+
+    assert out_lengths == [len(arr) for arr in out_arrays]
 
     for (kw, arr), okw, oarr in zip(data, out_keywords, out_arrays):
         assert kw == okw
