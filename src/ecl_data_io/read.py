@@ -45,10 +45,11 @@ def lazy_read(filelike, fileformat=None):
 
     check_correct_mode(stream, fileformat)
 
-    if fileformat == Format.FORMATTED:
-        yield from FormattedEclArray.parse(stream)
-    else:
-        yield from UnformattedEclArray.parse(stream)
-
-    if didopen:
-        stream.close()
+    try:
+        if fileformat == Format.FORMATTED:
+            yield from FormattedEclArray.parse(stream)
+        else:
+            yield from UnformattedEclArray.parse(stream)
+    finally:
+        if didopen:
+            stream.close()
