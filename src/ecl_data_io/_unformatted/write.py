@@ -15,9 +15,9 @@ def write_array_header(stream, kw_str, type_str, size):
     if not ecl_types.is_valid_type(type_str):
         raise EclWriteError(f"Not a valid ecl type: {type_str}")
 
-    if size > 2 ** 31:
-        write_array_header(stream, kw_str, b"X231", -(size // (2 ** 31)))
-        size %= 2 ** 31
+    if size > 2**31:
+        write_array_header(stream, kw_str, b"X231", -(size // (2**31)))
+        size %= 2**31
 
     stream.write((16).to_bytes(4, byteorder="big", signed=True))
     stream.write(kw_str.encode("ascii"))
@@ -30,7 +30,7 @@ def cast_array_to_ecl(arr):
     if arr.dtype in [np.int32, np.float32, np.float64]:
         return arr.astype(arr.dtype.newbyteorder(">"))
     if np.issubdtype(arr.dtype, np.bool_):
-        return arr.astype(">i4")
+        return -arr.astype(">i4")
     elif np.issubdtype(arr.dtype, np.integer):
         result_dtype = ">i4"
     elif np.issubdtype(arr.dtype, np.floating):
