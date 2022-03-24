@@ -1,5 +1,6 @@
 import io
 
+from ecl_data_io.types import MESS
 import ecl_data_io._formatted.write as ecl_io_fwrite
 import numpy as np
 
@@ -63,3 +64,15 @@ def test_write_doub():
    0.00000000000000D+00   0.00000000000000D+00   0.00000000000000D+00
    0.00000000000000D+00\n"""
     )
+
+
+def test_write_mess():
+    buf = io.StringIO()
+    ecl_io_fwrite.formatted_write(
+        buf, [("MESSHEAD", MESS)]
+    )
+    assert (
+        buf.getvalue()
+        == """ 'MESSHEAD'           0 'MESS'\n"""
+    )
+
