@@ -125,4 +125,6 @@ def test_write_mess():
 
     marker = (16).to_bytes(4, byteorder="big", signed=True)
 
-    assert buf.getvalue() == marker + b"MESSHEAD" + b"\x00\x00\x00\x00" + b"MESS" + marker
+    assert (
+        buf.getvalue() == marker + b"MESSHEAD" + b"\x00\x00\x00\x00" + b"MESS" + marker
+    )

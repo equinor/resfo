@@ -15,9 +15,9 @@ def write_array_header(stream, kw_str, type_str, size):
     if not ecl_types.is_valid_type(type_str):
         raise EclWriteError(f"Not a valid ecl type: {type_str}")
 
-    if size > 2 ** 31:
-        write_array_header(stream, kw_str, b"X231", -(size // (2 ** 31)))
-        size %= 2 ** 31
+    if size > 2**31:
+        write_array_header(stream, kw_str, b"X231", -(size // (2**31)))
+        size %= 2**31
 
     stream.write((16).to_bytes(4, byteorder="big", signed=True))
     stream.write(kw_str.encode("ascii"))

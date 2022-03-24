@@ -68,11 +68,5 @@ def test_write_doub():
 
 def test_write_mess():
     buf = io.StringIO()
-    ecl_io_fwrite.formatted_write(
-        buf, [("MESSHEAD", MESS)]
-    )
-    assert (
-        buf.getvalue()
-        == """ 'MESSHEAD'           0 'MESS'\n"""
-    )
-
+    ecl_io_fwrite.formatted_write(buf, [("MESSHEAD", MESS)])
+    assert buf.getvalue() == """ 'MESSHEAD'           0 'MESS'\n"""

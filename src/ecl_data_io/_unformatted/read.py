@@ -121,7 +121,7 @@ class UnformattedEclArray(EclArray):
         self._read_record_marker(16)
         if self._type == b"X231":
             self._read_record_marker(16)
-            self._length *= -(2 ** 31)
+            self._length *= -(2**31)
             previous_keyword = self._keyword
             self._read_keyword()
             if previous_keyword != self._keyword:
