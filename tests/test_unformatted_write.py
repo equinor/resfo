@@ -3,6 +3,7 @@ import io
 import numpy as np
 import pytest
 
+from ecl_data_io.types import MESS
 import ecl_data_io._unformatted.write as ecl_unf_write
 
 
@@ -115,3 +116,15 @@ def test_write_str_list_char():
     marker = (16).to_bytes(4, byteorder="big", signed=True)
 
     assert buf.getvalue() == marker + b"a" * 8 + b"b" * 4 + b" " * 4 + marker
+
+
+def test_write_mess():
+    buf = io.BytesIO()
+
+    ecl_unf_write.unformatted_write(buf, [("MESSHEAD", MESS)])
+
+    marker = (16).to_bytes(4, byteorder="big", signed=True)
+
+    assert (
+        buf.getvalue() == marker + b"MESSHEAD" + b"\x00\x00\x00\x00" + b"MESS" + marker
+    )

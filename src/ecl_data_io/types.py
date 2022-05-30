@@ -35,6 +35,8 @@ static_dtypes = {
     b"CHAR": np.dtype("|S8"),
 }
 
+MESS = None
+
 
 def to_np_type(type_keyword):
     """
@@ -54,6 +56,8 @@ def from_np_dtype(array):
         given numpy array's dtype.
     """
     dtype = array.dtype
+    if dtype == "object" and array == MESS:
+        return b"MESS"
     if dtype in [np.dtype(np.int32), np.dtype(np.int32).newbyteorder(">")]:
         return b"INTE"
     if dtype in [np.dtype(np.int64), np.dtype(np.int64).newbyteorder(">")]:

@@ -65,9 +65,14 @@ def write_entry(stream, keyword, array_like):
     """
     array = np.asarray(array_like)
     ecl_type = ecl_types.from_np_dtype(array)
-    stream.write(
-        f" '{keyword.ljust(8)}' {' {:>10d}'.format(len(array))} '{ecl_type.decode('ascii').ljust(4)}'"
-    )
+    if ecl_type == b"MESS":
+        stream.write(
+            f" '{keyword.ljust(8)}' {' {:>10d}'.format(0)} '{ecl_type.decode('ascii').ljust(4)}'"
+        )
+    else:
+        stream.write(
+            f" '{keyword.ljust(8)}' {' {:>10d}'.format(len(array))} '{ecl_type.decode('ascii').ljust(4)}'"
+        )
 
     if np.issubdtype(array.dtype, np.str_) or array.dtype.char == "S":
         write_str_list(stream, array.tolist())
