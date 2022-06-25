@@ -9,7 +9,7 @@ and :meth:`ecl_data_io.write` functions:
 read
 ----
 
-The read function will open a given file and give you a list of touples
+The read function will open a given file and give you a list of tuples
 of the keywords and arrays.
 
 >>> import ecl_data_io as eclio
