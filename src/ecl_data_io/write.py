@@ -8,6 +8,7 @@ from ecl_data_io.format import Format, check_correct_mode, get_stream
 def write(filelike, contents, fileformat=Format.UNFORMATTED):
     """
     Write the given contents to the given file in ecl format.
+
     :param filelike: Either filename, pathlib.Path or stream
         to write file to. For fileformat=Format.UNFORMATTED the
         stream must be in binary mode and for fileformat=Format.FORMATTED
