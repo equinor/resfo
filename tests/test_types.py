@@ -21,6 +21,7 @@ def test_from_np_dtype():
     assert ecl_io_types.from_np_dtype(np.array([], dtype=np.dtype(">f4"))) == b"REAL"
     assert ecl_io_types.from_np_dtype(np.array([], dtype=np.dtype(np.bool_))) == b"LOGI"
     assert ecl_io_types.from_np_dtype(np.array([], dtype=np.dtype(">f8"))) == b"DOUB"
+    assert ecl_io_types.from_np_dtype(ecl_io_types.MESS) == b"MESS"
     assert (
         ecl_io_types.from_np_dtype(np.array(["HELLO WORLD"], dtype=np.dtype("|S")))
         == b"C011"
