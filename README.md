@@ -19,7 +19,7 @@ Getting started
 ===============
 
 Ecl output files consist of a sequence of named arrays. ecl-data-io does not
-interpret the names, but simply give you a touple of the name and a numpy array
+interpret the names, but simply give you a tuple of the name and a numpy array
 with the read function:
 
 ```
