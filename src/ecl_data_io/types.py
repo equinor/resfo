@@ -35,7 +35,9 @@ static_dtypes = {
     b"CHAR": np.dtype("|S8"),
 }
 
-MESS = None
+
+class MESS:
+    pass
 
 
 def to_np_type(type_keyword):
@@ -55,8 +57,10 @@ def from_np_dtype(array):
     :returns: The corresponding ecl type for the
         given numpy array's dtype.
     """
+    if array is MESS:
+        return b"MESS"
     dtype = array.dtype
-    if dtype == "object" and array == MESS:
+    if dtype == "object":
         return b"MESS"
     if dtype in [np.dtype(np.int32), np.dtype(np.int32).newbyteorder(">")]:
         return b"INTE"
