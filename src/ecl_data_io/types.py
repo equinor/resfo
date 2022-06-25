@@ -37,6 +37,11 @@ static_dtypes = {
 
 
 class MESS:
+    """
+    The MESS value is a sentinell object used to signal that the type of the
+    array that is to be written should be an empty array of type MESS.
+    """
+
     pass
 
 
