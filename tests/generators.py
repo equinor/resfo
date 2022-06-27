@@ -2,9 +2,9 @@ import hypothesis.strategies as st
 import numpy as np
 from hypothesis.extra.numpy import arrays
 
-from ecl_data_io import Format
+import ecl_data_io as eclio
 
-formats = st.sampled_from(Format)
+formats = st.sampled_from(eclio.Format)
 in_formats = st.one_of(formats, st.just(None))
 keywords = st.text(
     min_size=8, max_size=8, alphabet=st.characters(min_codepoint=40, max_codepoint=126)
@@ -19,5 +19,7 @@ float_arrays = arrays(
     shape=(10,),
 )
 
-ecl_arrays = st.one_of(float_arrays, int_arrays, str_arrays, unicode_arrays)
+ecl_arrays = st.one_of(
+    float_arrays, int_arrays, str_arrays, unicode_arrays, st.just(eclio.MESS)
+)
 ecl_datas = st.lists(st.tuples(keywords, ecl_arrays))
