@@ -1,5 +1,4 @@
 import sys
-from os.path import join
 
 import numpy as np
 import pytest
@@ -9,14 +8,6 @@ from numpy.testing import assert_allclose
 from ecl_data_io import read, write
 
 from .generators import ecl_datas, formats
-
-
-@pytest.fixture(params=["file", "path"])
-def filelike(request, tmp_path, tmpdir):
-    if request.param == "file":
-        return join(tmpdir, "test.txt")
-    if request.param == "path":
-        return tmp_path / "testpath.txt"
 
 
 def same_keyword(a, b):
