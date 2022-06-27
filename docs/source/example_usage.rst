@@ -68,7 +68,7 @@ For better control, one can pass the opened file:
 >>> import ecl_data_io as eclio
 >>>
 >>> with open("my_grid.egrid", "rb") as f:
-...     generator = eclio.lazy_read("my_grid.egrid")
+...     generator = eclio.lazy_read(f)
 ...     item = next(generator)
 ...     print(item.read_keyword())
 
