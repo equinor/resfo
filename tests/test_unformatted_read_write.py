@@ -7,6 +7,8 @@ from ecl_data_io._unformatted.read import UnformattedEclArray
 from ecl_data_io._unformatted.write import unformatted_write
 
 
+@pytest.mark.filterwarnings("ignore:casting")
+@pytest.mark.filterwarnings("ignore:downcasting")
 @pytest.mark.parametrize("container", [dict, lambda x: x])
 @pytest.mark.parametrize(
     "data",

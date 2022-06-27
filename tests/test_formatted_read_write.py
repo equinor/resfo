@@ -1,5 +1,3 @@
-import io
-
 import numpy as np
 import pytest
 
@@ -7,6 +5,7 @@ from ecl_data_io._formatted.read import FormattedEclArray
 from ecl_data_io._formatted.write import formatted_write
 
 
+@pytest.mark.filterwarnings("ignore:downcasting")
 @pytest.mark.parametrize("container", [dict, lambda x: x])
 @pytest.mark.parametrize(
     "data",
