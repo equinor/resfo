@@ -98,3 +98,24 @@ numpy dtypes are mapped to ecl file types as follows:
 * LOGI to `bool`
 * CHAR to `string` (or `numpy.dtype("|S8")`)
 * C0XX to `numpy.dtype("|SXX")`
+
+Updating
+--------
+
+It is possible to do an in-place update of an array in an existing
+file, by passing a stream opened for both read and write. The array
+cannot change type or size.
+
+Say you want to update the first keyword name `"OLD_NAME"`, change the array
+to `new_array` and the name to `NEW_NAME`, then that can be done
+with the following:
+
+>>> import ecl_data_io as eclio
+>>>
+>>> new_array = ...
+>>>
+>>> with open("my_grid.egrid", "br+") as f: # Open with read and write
+...     for entry in eclio.lazy_read(f):
+...         if entry.read_keyword() == "OLD_NAME":
+...             entry.update(keyword="NEW_NAME", array=new_array)
+...             break
