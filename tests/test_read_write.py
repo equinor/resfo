@@ -1,32 +1,14 @@
 import sys
 from os.path import join
 
-import hypothesis.strategies as st
 import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
-from hypothesis.extra.numpy import arrays
 from numpy.testing import assert_allclose
 
-from ecl_data_io import Format, read, write
+from ecl_data_io import read, write
 
-formats = st.sampled_from(Format)
-in_formats = st.one_of(formats, st.just(None))
-keywords = st.text(
-    min_size=8, max_size=8, alphabet=st.characters(min_codepoint=40, max_codepoint=126)
-)
-
-unicode_arrays = st.builds(np.array, st.lists(keywords))
-str_arrays = st.builds(lambda arr: arr.astype("|S"), unicode_arrays)
-int_arrays = arrays(dtype=np.int32, shape=(10,))
-float_arrays = arrays(
-    dtype=np.float64,
-    elements=st.floats(width=64, min_value=-1e100, max_value=1e100),
-    shape=(10,),
-)
-
-ecl_arrays = st.one_of(float_arrays, int_arrays, str_arrays, unicode_arrays)
-ecl_datas = st.lists(st.tuples(keywords, ecl_arrays))
+from .generators import ecl_datas, formats
 
 
 @pytest.fixture(params=["file", "path"])
