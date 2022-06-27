@@ -1,6 +1,7 @@
 import numpy as np
 
 import ecl_data_io.types as ecl_types
+from ecl_data_io._formatted.write import write_entry
 from ecl_data_io.array_entry import EclArray
 from ecl_data_io.errors import EclParsingError
 
@@ -37,6 +38,9 @@ class FormattedEclArray(EclArray):
         if self._keyword is None:
             self._read()
         return self._read_array()
+
+    def update(self, *, keyword=None, array=None):
+        raise NotImplementedError("Update is not implemented for formatted files")
 
     def _read_logical(self):
         """

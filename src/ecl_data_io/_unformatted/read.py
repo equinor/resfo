@@ -4,6 +4,7 @@ import numpy as np
 
 import ecl_data_io.types as ecl_types
 from ecl_data_io._unformatted.common import bytes_in_array, group_len, item_size
+from ecl_data_io._unformatted.write import write_array_like
 from ecl_data_io.array_entry import EclArray
 from ecl_data_io.errors import EclParsingError
 
@@ -45,6 +46,26 @@ class UnformattedEclArray(EclArray):
             array = array.astype(np.bool_)
 
         return array
+
+    def update(self, *, keyword=None, array=None):
+        if keyword is None:
+            keyword = self.read_keyword()
+
+        if array is not ecl_types.MESS:
+            if array is not None:
+                array = np.asarray(array)
+            else:
+                array = self.read_array()
+            if array is not ecl_types.MESS and self.read_length() != array.size:
+                raise ValueError("Cannot update array with different size")
+
+        if self.read_type() != ecl_types.from_np_dtype(array):
+            raise ValueError("Cannot update array with different type")
+
+        self.stream.seek(self.start)
+        write_array_like(self.stream, keyword, array)
+        self._keyword = keyword
+        self._array = array
 
     def _read_record_marker(self, expected_value):
         """

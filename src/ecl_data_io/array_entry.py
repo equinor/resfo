@@ -73,6 +73,22 @@ class EclArray(ABC):
         return self._type
 
     @abstractmethod
+    def update(self, *, keyword=None, array=None):
+        """
+        Updates the entry with the given new data.
+
+        :param new_keyword: The new keyword, must be 8 characters, defaults to no change.
+        :param new_array: The new array, must be of same type and size
+            as existing array, defaults to no change.
+
+        :raises ValueError: If array does not have the same type or length as
+            existing array.
+        :raises io.UnsupportedOperation: If the underlying stream has been opened
+            with the wrong mode (file must be opened with "r+" in order to correctly update)
+        """
+        pass
+
+    @abstractmethod
     def _read(self):
         """
         Reads the array entry. Guarantees that after, either entry.is_eof() and
