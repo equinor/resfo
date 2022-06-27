@@ -140,6 +140,8 @@ class FormattedEclArray(EclArray):
     def _read_array(self):
         self.stream.seek(self._data_start)
         drop_while_space(self.stream)
+        if self._type == b"MESS":
+            return ecl_types.MESS
         if ecl_types.is_character_type(self._type):
             return np.array([self._read_quote_separated() for i in range(self._length)])
         elif self._type == b"LOGI":

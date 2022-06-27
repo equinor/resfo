@@ -37,7 +37,8 @@ class UnformattedEclArray(EclArray):
         """
         if self._data_start is None:
             self._read()
-
+        if self._type == b"MESS":
+            return ecl_io_types.MESS
         self.stream.seek(self._data_start)
         g_len = group_len(self.type)
         np_type = ecl_io_types.to_np_type(self._type)
