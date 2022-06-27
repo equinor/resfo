@@ -41,7 +41,7 @@ def test_write_int():
 def test_write_logi():
     buf = io.StringIO()
     ecl_io_fwrite.formatted_write(
-        buf, [("LOGIHEAD", np.zeros(shape=(26,), dtype=np.bool))]
+        buf, [("LOGIHEAD", np.zeros(shape=(26,), dtype=np.bool_))]
     )
 
     assert (
