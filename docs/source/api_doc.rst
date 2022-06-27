@@ -10,3 +10,6 @@ API-Doc
 .. autoclass:: ecl_data_io.Format
 
 .. autoclass:: ecl_data_io.MESS
+
+.. autoclass:: ecl_data_io.array_entry.EclArray
+   :members:

@@ -33,26 +33,6 @@ class FormattedEclArray(EclArray):
 
         self._is_eof = False
 
-    @property
-    def is_eof(self):
-        if self._keyword is None:
-            self._read()
-        return self._is_eof
-
-    def read_keyword(self):
-        if self._keyword is None:
-            self._read()
-        return self._keyword
-
-    def read_length(self):
-        """
-        Read the length from the formatted ecl file.
-        :returns: The length of the array in number of entries.
-        """
-        if self._length is None:
-            self._read()
-        return self._length
-
     def read_array(self):
         if self._keyword is None:
             self._read()
