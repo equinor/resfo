@@ -52,6 +52,19 @@ def test_write_logi():
     )
 
 
+def test_write_real():
+    buf = io.StringIO()
+    ecl_io_fwrite.formatted_write(
+        buf, [("REALHEAD", np.zeros(shape=(4,), dtype=np.float32))]
+    )
+
+    assert (
+        buf.getvalue()
+        == """ 'REALHEAD'           4 'REAL'
+   0.00000000E+00   0.00000000E+00   0.00000000E+00   0.00000000E+00\n"""
+    )
+
+
 def test_write_doub():
     buf = io.StringIO()
     ecl_io_fwrite.formatted_write(
