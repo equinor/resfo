@@ -24,19 +24,19 @@ def test_unformatted_ecl_array_simple_read(simple_unformatted_buffer):
     ecl_arr = ecl_io_uf.UnformattedEclArray(simple_unformatted_buffer)
     assert not ecl_arr.is_eof
     assert ecl_arr.read_keyword() == "KEYWORD1"
-    assert ecl_arr.type == b"INTE"
-    assert ecl_arr.length == 1
+    assert ecl_arr.read_type() == b"INTE"
+    assert ecl_arr.read_length() == 1
     assert np.array_equal(ecl_arr.read_array(), np.zeros(shape=(1,), dtype=">i4"))
 
 
 def test_unformatted_ecl_array_simple_type_loads(simple_unformatted_buffer):
     ecl_arr = ecl_io_uf.UnformattedEclArray(simple_unformatted_buffer)
-    assert ecl_arr.type == b"INTE"
+    assert ecl_arr.read_type() == b"INTE"
 
 
 def test_unformatted_ecl_array_simple_length_loads(simple_unformatted_buffer):
     ecl_arr = ecl_io_uf.UnformattedEclArray(simple_unformatted_buffer)
-    assert ecl_arr.length == 1
+    assert ecl_arr.read_length() == 1
 
 
 def test_unformatted_ecl_array_big_read():
@@ -59,8 +59,8 @@ def test_unformatted_ecl_array_big_read():
     ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
     assert not ecl_arr.is_eof
     assert ecl_arr.read_keyword() == "KEYWORD1"
-    assert ecl_arr.type == b"INTE"
-    assert ecl_arr.length == 2300
+    assert ecl_arr.read_type() == b"INTE"
+    assert ecl_arr.read_length() == 2300
     assert np.array_equal(ecl_arr.read_array(), np.ones(shape=(2300,), dtype=">i4"))
 
 
@@ -194,8 +194,8 @@ def test_unformatted_simple_unformatted_parse():
     for ecl_arr in ecl_io_uf.UnformattedEclArray.parse(buf):
         assert not ecl_arr.is_eof
         assert ecl_arr.read_keyword() == "KEYWORD1"
-        assert ecl_arr.type == b"INTE"
-        assert ecl_arr.length == 1
+        assert ecl_arr.read_type() == b"INTE"
+        assert ecl_arr.read_length() == 1
         assert np.array_equal(ecl_arr.read_array(), np.zeros(shape=(1,), dtype=">i4"))
 
     buf.seek(0)
@@ -227,8 +227,8 @@ def test_unformatted_x231_parse():
     for ecl_arr in ecl_io_uf.UnformattedEclArray.parse(buf):
         assert not ecl_arr.is_eof
         assert ecl_arr.read_keyword() == "KEYWORD1"
-        assert ecl_arr.type == b"INTE"
-        assert ecl_arr.length == 5000000000
+        assert ecl_arr.read_type() == b"INTE"
+        assert ecl_arr.read_length() == 5000000000
 
     buf.seek(0)
 
@@ -268,8 +268,8 @@ def test_unformatted_parse_mess():
     for ecl_arr in ecl_io_uf.UnformattedEclArray.parse(buf):
         assert not ecl_arr.is_eof
         assert ecl_arr.read_keyword() == "KEYWORD1"
-        assert ecl_arr.type == b"MESS"
-        assert ecl_arr.length == 0
+        assert ecl_arr.read_type() == b"MESS"
+        assert ecl_arr.read_length() == 0
 
     buf.seek(0)
 

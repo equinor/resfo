@@ -1,16 +1,12 @@
-import io
 from abc import ABC, abstractmethod
-
-import numpy as np
-
-import ecl_data_io.types as ecl_io_types
-from ecl_data_io._unformatted.common import group_len, item_size
-from ecl_data_io.errors import EclParsingError
 
 
 class EclArray(ABC):
     """
     An array entry in a ecl file.
+
+    This class is not ment to be constructed directly, but rather
+    generated e.g. :py:meth:`ecl_data_io.lazy_read`.
     """
 
     def __init__(self, stream):
@@ -39,47 +35,42 @@ class EclArray(ABC):
             self._read()
         return self._is_eof
 
-    @abstractmethod
     def read_keyword(self):
         """
         Read the keyword from the ecl file.
+
         :returns: The keyword as a 8 character string.
         """
-        pass
+        if self._keyword is None:
+            self._read()
+        return self._keyword
 
-    @abstractmethod
     def read_length(self):
         """
         Read the length from the ecl file.
+
         :returns: The length of the array in number of entries.
         """
-        pass
+        if self._length is None:
+            self._read()
+        return self._length
 
     @abstractmethod
     def read_array(self):
         """
         Read the array from the unformatted ecl file.
+
         :returns: numpy array of values.
         """
         pass
 
-    @property
-    def type(self):
+    def read_type(self):
         """
         The type given in the header of the array
         """
         if self._type is None:
             self._read()
         return self._type
-
-    @property
-    def length(self):
-        """
-        The length given in the header of the array
-        """
-        if self._length is None:
-            self._read()
-        return self._length
 
     @abstractmethod
     def _read(self):

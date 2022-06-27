@@ -28,8 +28,8 @@ def test_simple_ecl_array_read(tmp_path):
     with (tmp_path / "test.txt").open("r") as f:
         ecl_arr = ecl_read.FormattedEclArray(f)
 
-        assert ecl_arr.type == b"INTE"
-        assert ecl_arr.length == 4
+        assert ecl_arr.read_type() == b"INTE"
+        assert ecl_arr.read_length() == 4
         assert ecl_arr.read_keyword() == "SPECGRID"
         assert np.array_equal(ecl_arr.read_array(), [40, 64, 14, 1])
 
@@ -43,8 +43,8 @@ def test_simple_ecl_char_array_read(tmp_path):
     with (tmp_path / "test.txt").open("r") as f:
         ecl_arr = ecl_read.FormattedEclArray(f)
 
-        assert ecl_arr.type == b"CHAR"
-        assert ecl_arr.length == 2
+        assert ecl_arr.read_type() == b"CHAR"
+        assert ecl_arr.read_length() == 2
         assert ecl_arr.read_keyword() == "CHARARR1"
         assert np.array_equal(ecl_arr.read_array(), ["HELLO   ", "WORLD   "])
 
@@ -58,7 +58,7 @@ def test_simple_ecl_logi_array_read(tmp_path):
     with (tmp_path / "test.txt").open("r") as f:
         ecl_arr = ecl_read.FormattedEclArray(f)
 
-        assert ecl_arr.type == b"LOGI"
-        assert ecl_arr.length == 2
+        assert ecl_arr.read_type() == b"LOGI"
+        assert ecl_arr.read_length() == 2
         assert ecl_arr.read_keyword() == "KEYWORD1"
         assert np.array_equal(ecl_arr.read_array(), [True, False])

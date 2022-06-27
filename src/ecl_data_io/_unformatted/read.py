@@ -12,24 +12,6 @@ class UnformattedEclArray(EclArray):
     An array entry in a unformatted ecl file.
     """
 
-    def read_keyword(self):
-        """
-        Read the keyword from the unformatted ecl file.
-        :returns: The keyword as a 8 character string.
-        """
-        if self._keyword is None:
-            self._read()
-        return self._keyword.decode("ascii")
-
-    def read_length(self):
-        """
-        Read the length from the unformatted ecl file.
-        :returns: The length of the array in number of entries.
-        """
-        if self._length is None:
-            self._read()
-        return self._length
-
     def read_array(self):
         """
         Read the array from the unformatted ecl file.
@@ -40,7 +22,7 @@ class UnformattedEclArray(EclArray):
         if self._type == b"MESS":
             return ecl_io_types.MESS
         self.stream.seek(self._data_start)
-        g_len = group_len(self.type)
+        g_len = group_len(self._type)
         np_type = ecl_io_types.to_np_type(self._type)
         array = np.zeros(shape=(self._length,), dtype=np_type)
         to_read = self._length
@@ -79,7 +61,7 @@ class UnformattedEclArray(EclArray):
         With stream.peek() at the start of the keyword, reads
         it into self._keyword
         """
-        self._keyword = self.stream.read(8)
+        self._keyword = self.stream.read(8).decode("ascii")
         if not self._keyword or len(self._keyword) < 8:
             raise EclParsingError("Reached end-of-file while reading keyword")
 
@@ -146,7 +128,7 @@ class UnformattedEclArray(EclArray):
                 f"has item length {type_len} which requires 0 number of"
                 f"elements, but found {self._length} amount of elements."
             )
-        bytes_to_skip = bytes_in_array(self._length, self.type)
+        bytes_to_skip = bytes_in_array(self._length, self._type)
 
         self._data_start = self.stream.tell()
         self.stream.seek(bytes_to_skip, io.SEEK_CUR)
