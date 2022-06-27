@@ -50,6 +50,7 @@ def test_write_array_header_not_a_type():
         ecl_unf_write.write_array_header(buf, "KEYWORD1", b"NOTY", 3)
 
 
+@pytest.mark.filterwarnings("ignore:casting")
 @pytest.mark.parametrize(
     "array, expected_array",
     [
@@ -71,6 +72,7 @@ def test_cast_array_to_ecl_bad_type():
         ecl_unf_write.cast_array_to_ecl(array)
 
 
+@pytest.mark.filterwarnings("ignore:casting")
 def test_write_np_array():
     buf = io.BytesIO()
     ecl_unf_write.write_np_array(
