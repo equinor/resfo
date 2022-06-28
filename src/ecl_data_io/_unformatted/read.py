@@ -1,7 +1,8 @@
 import io
 
-import ecl_data_io.types as ecl_io_types
 import numpy as np
+
+import ecl_data_io.types as ecl_types
 from ecl_data_io._unformatted.common import bytes_in_array, group_len, item_size
 from ecl_data_io.array_entry import EclArray
 from ecl_data_io.errors import EclParsingError
@@ -20,10 +21,10 @@ class UnformattedEclArray(EclArray):
         if self._data_start is None:
             self._read()
         if self._type == b"MESS":
-            return ecl_io_types.MESS
+            return ecl_types.MESS
         self.stream.seek(self._data_start)
         g_len = group_len(self._type)
-        np_type = ecl_io_types.to_np_type(self._type)
+        np_type = ecl_types.to_np_type(self._type)
         array = np.zeros(shape=(self._length,), dtype=np_type)
         to_read = self._length
         type_len = item_size(self._type)
