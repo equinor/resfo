@@ -27,7 +27,7 @@ def write_array_header(stream, kw_str, type_str, size):
 
 
 def cast_array_to_ecl(arr):
-    if arr.dtype in [np.int32, np.float32, np.float64]:
+    if arr.dtype.type in [np.int32, np.float32, np.float64]:
         return arr.astype(arr.dtype.newbyteorder(">"))
     if np.issubdtype(arr.dtype, np.bool_):
         return -arr.astype(">i4")
