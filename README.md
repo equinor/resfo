@@ -36,4 +36,4 @@ for kw, arr in eclio.read("my_grid.egrid"):
 >>> "MAPAXES"
 ```
 
-For more information, see the docs: ecl-data-io.rtfd.io
+For more information, see [the docs](ecl-data-io.rtfd.io).
