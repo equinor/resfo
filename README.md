@@ -39,5 +39,3 @@ for kw, arr in eclio.read("my_grid.egrid"):
 ```
 
 For more information, see [the docs](http://ecl-data-io.rtfd.io).
-
-
