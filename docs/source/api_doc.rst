@@ -12,4 +12,5 @@ API-Doc
 .. autoclass:: ecl_data_io.MESS
 
 .. autoclass:: ecl_data_io.array_entry.EclArray
+   :exclude-members: is_eof, parse
    :members:
