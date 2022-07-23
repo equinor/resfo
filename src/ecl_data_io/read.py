@@ -38,6 +38,17 @@ def lazy_read(filelike, fileformat=None):
     :param fileformat: Either ecl_data_io.Format.FORMATTED for ascii
         format, ecl_data_io.Format.UNFORMATTED for binary formatted files
         or None for guess.
+
+    :raises ecl_data_io.EclParsingError: If the file is not a valid
+        ecl file.
+
+    .. note::
+        If given a file to be open (as opposed to a stream), the errors
+        (various `IOError` s) associated with the default behavior of the
+        built-in `open()` function may be raised.
+
+        When given a stream, the exceptions associated with the stream will
+        pass through.
     """
     if fileformat is None:
         fileformat = guess_format(filelike)
