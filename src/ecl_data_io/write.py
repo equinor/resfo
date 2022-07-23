@@ -19,6 +19,17 @@ def write(filelike, contents, fileformat=Format.UNFORMATTED):
         will be converted according to ecl_data_io.types.to_np_type
     :param fileformat: Either ecl_data_io.Format.FORMATTED for ascii
         format or ecl_data_io.Format.UNFORMATTED for binary format.
+
+    :raises ecl_data_io.EclWriteError: If the given contents cannot be
+        written to an ecl file.
+
+    .. note::
+        If given a file to be open (as opposed to a stream), the errors
+        (various `IOError` s) associated with the default behavior of the
+        built-in `open()` function may be raised.
+
+        When given a stream, the exceptions associated with the stream will
+        pass through.
     """
     stream, didopen = get_stream(filelike, fileformat, mode="w")
 
