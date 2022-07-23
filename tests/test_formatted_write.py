@@ -1,8 +1,9 @@
 import io
 
-from ecl_data_io.types import MESS
-import ecl_data_io._formatted.write as ecl_io_fwrite
 import numpy as np
+
+import ecl_data_io._formatted.write as ecl_io_fwrite
+from ecl_data_io.types import MESS
 
 
 def test_write_str_list():

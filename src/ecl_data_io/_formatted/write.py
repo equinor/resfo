@@ -1,7 +1,6 @@
 import numpy as np
 
 import ecl_data_io.types as ecl_types
-from ecl_data_io.errors import EclWriteError
 
 
 def write_str_list(stream, str_list):
@@ -25,6 +24,7 @@ def write_np_array(stream, array, ecl_type):
     """
     Writes the given numpy array to the stream as
     the given ecl_type.
+
     :param stream: stream to write to.
     :param array: Numpy array.
     :param ecl_type: The ecl type to use for the array, see
@@ -59,6 +59,7 @@ def write_entry(stream, keyword, array_like):
     """
     Write the given array/keyword entry to the
     stream in the formatted ecl file format.
+
     :param stream: text-mode stream to write to.
     :param keyword: 8-character string to use for keyword.
     :param array_like: Array of values to write.
@@ -84,6 +85,7 @@ def formatted_write(stream, keyworded_arrays):
     """
     Writes the list of data entries to the stream as
     formatted ecl.
+
     :param stream: File handle in text mode.
     :param keyworded_arrays: Either iterable or list of (kw, array)
         tuples for entries to be written to the file. Also takes dictionary

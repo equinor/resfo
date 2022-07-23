@@ -3,8 +3,8 @@ import io
 import numpy as np
 import pytest
 
-from ecl_data_io.types import MESS
 import ecl_data_io._unformatted.write as ecl_unf_write
+from ecl_data_io.types import MESS
 
 
 def test_write_array_header():

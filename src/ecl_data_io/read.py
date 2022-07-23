@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from ecl_data_io._formatted.read import FormattedEclArray
 from ecl_data_io._unformatted.read import UnformattedEclArray
 from ecl_data_io.format import Format, check_correct_mode, get_stream, guess_format

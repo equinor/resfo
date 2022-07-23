@@ -104,7 +104,7 @@ def is_valid_type(type_str):
     """
     :returns: Whether the given byte string is a valid ecl type.
     """
-    if type_str in static_dtypes.keys():
+    if type_str in static_dtypes:
         return True
     if type_str in [b"X231", b"MESS"]:
         return True

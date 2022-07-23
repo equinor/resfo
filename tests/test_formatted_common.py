@@ -1,7 +1,8 @@
 import hypothesis.strategies as st
 import pytest
-from ecl_data_io._unformatted.common import bytes_in_array, group_len, item_size
 from hypothesis import given
+
+from ecl_data_io._unformatted.common import bytes_in_array, group_len, item_size
 
 
 def test_group_len():

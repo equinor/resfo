@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from ecl_data_io._formatted.write import formatted_write
 from ecl_data_io._unformatted.write import unformatted_write
 from ecl_data_io.format import Format, check_correct_mode, get_stream
