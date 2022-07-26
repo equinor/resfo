@@ -68,9 +68,9 @@ def write_str_list(stream, str_list, ecl_type):
         return
     max_len = max(len(s) for s in str_list)
     if max_len > 99:
-        raise ValueError("Ecl files does not support strings of length > 99")
+        raise EclWriteError("Ecl files does not support strings of length > 99")
     if max_len > str_size:
-        raise ValueError(
+        raise EclWriteError(
             f"Inconsistent type size, have {str_size} type but longest string is {max_len}"
         )
     str_list = [s.ljust(str_size) for s in str_list]
@@ -79,7 +79,7 @@ def write_str_list(stream, str_list, ecl_type):
             s.encode("ascii") if isinstance(s, str) else s for s in str_list
         ]
     except UnicodeEncodeError as e:
-        raise ValueError(
+        raise EclWriteError(
             "Cannot write non-ascii strings to unformatted ecl files"
         ) from e
 
@@ -100,7 +100,10 @@ def write_str_list(stream, str_list, ecl_type):
 
 def write_array_like(stream, keyword, array_like):
     array = np.asarray(array_like)
-    ecl_type = ecl_types.from_np_dtype(array)
+    try:
+        ecl_type = ecl_types.from_np_dtype(array)
+    except ValueError as e:
+        raise EclWriteError(f"{e}") from e
     if ecl_type == b"MESS":
         write_array_header(stream, keyword, ecl_type, 0)
         array = np.array([])
