@@ -1,17 +1,14 @@
 import warnings
 
-import numpy as np
-
 import ecl_data_io.types as ecl_types
+import numpy as np
 from ecl_data_io._unformatted.common import group_len, item_size
 from ecl_data_io.errors import EclWriteError
 
 
 def write_array_header(stream, kw_str, type_str, size):
     if len(kw_str) != 8:
-        raise ValueError("keywords must have length exactly size 8")
-    if "'" in kw_str:
-        raise ValueError('keywords in formatted files cannot contain "\'"')
+        raise EclWriteError("keywords must have length exactly size 8")
     if not ecl_types.is_valid_type(type_str):
         raise EclWriteError(f"Not a valid ecl type: {type_str}")
 
