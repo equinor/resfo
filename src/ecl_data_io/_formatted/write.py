@@ -63,8 +63,13 @@ def write_entry(stream, keyword, array_like):
     :param keyword: 8-character string to use for keyword.
     :param array_like: Array of values to write.
     """
+    if "'" in keyword:
+        raise EclWriteError('keywords in formatted files cannot contain "\'"')
     array = np.asarray(array_like)
-    ecl_type = ecl_types.from_np_dtype(array)
+    try:
+        ecl_type = ecl_types.from_np_dtype(array)
+    except ValueError as e:
+        raise EclWriteError(f"{e}") from e
     if ecl_type == b"MESS":
         stream.write(
             f" '{keyword.ljust(8)}' {' {:>10d}'.format(0)} '{ecl_type.decode('ascii').ljust(4)}'"
