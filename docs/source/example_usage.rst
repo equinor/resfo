@@ -12,7 +12,7 @@ read
 The read function will open a given file and give you a list of tuples
 of the keywords and arrays.
 
-... testsetup::
+.. testsetup::
 
     >>> import ecl_data_io as eclio
     >>>
