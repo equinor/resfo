@@ -26,7 +26,7 @@ Quick Start Guide
 Using the library
 -----------------
 
-... testsetup::
+.. testsetup::
 
     >>> import ecl_data_io as eclio
     >>>
