@@ -12,15 +12,32 @@ read
 The read function will open a given file and give you a list of tuples
 of the keywords and arrays.
 
+... testsetup::
+
+    >>> import ecl_data_io as eclio
+    >>>
+    >>> eclio.write(
+    ...     "my_grid.egrid",
+    ...     [
+    ...         ("FILEHEAD", []),
+    ...         ("GRIDHEAD", []),
+    ...         ("COORD", []),
+    ...         ("ZCORN", []),
+    ...         ("ACTNUM", []),
+    ...         ("MAPAXES", []),
+    ...     ],
+    ...     fileformat=eclio.Format.FORMATTED,
+    ... )
+
 >>> import ecl_data_io as eclio
 >>> for kw, arr in eclio.read("my_grid.egrid"):
-...     print(kw)
-"FILEHEAD"
-"GRIDHEAD"
-"COORD"
-"ZCORN"
-"ACTNUM"
-"MAPAXES"
+...     print(kw.strip())
+FILEHEAD
+GRIDHEAD
+COORD
+ZCORN
+ACTNUM
+MAPAXES
 
 write
 -----
@@ -28,19 +45,17 @@ write
 The :meth:`ecl_data_io.write` function will write such files
 from lists of keywords, array tuples:
 
->>> import ecl_data_io as eclio
->>> eclio.write("my_grid.egrid", ["FILEHEAD": [...], "GRIDHEAD": [10,10,10]])
+>>> eclio.write("my_grid.egrid", [("FILEHEAD", [1]), ("GRIDHEAD", [10,10,10])])
 
 The default format is is binary (unformatted), but it is possible to
 read and write ascii (formatted) aswell:
 
 
->>> import ecl_data_io as eclio
 >>> eclio.write(
->>>     "my_grid.egrid",
->>>     {"FILEHEAD": [...], "GRIDHEAD": [10,10,10]},
->>>     fileformat=eclio.Format.FORMATTED
->>> )
+...     "my_grid.fegrid",
+...     {"FILEHEAD": [1], "GRIDHEAD": [10,10,10]},
+...     fileformat=eclio.Format.FORMATTED
+... )
 
 lazy reading
 ------------
@@ -48,16 +63,10 @@ lazy reading
 It is possible to read through the file without loading all arrays into
 memory, ie. lazily:
 
-import ecl_data_io as eclio
-
->>> for item in eclio.lazy_read("my_grid.egrid"):
->>>     print(item.read_keyword())
-"FILEHEAD"
-"GRIDHEAD"
-"COORD"
-"ZCORN"
-"ACTNUM"
-"MAPAXES"
+>>> for item in eclio.lazy_read("my_grid.fegrid"):
+...     print(item.read_keyword())
+FILEHEAD
+GRIDHEAD
 
 
 Note that :meth:`ecl_data_io.lazy_read` in the above example is a generator of array
@@ -71,8 +80,7 @@ For better control, one can pass the opened file:
 ...     generator = eclio.lazy_read(f)
 ...     item = next(generator)
 ...     print(item.read_keyword())
-
-"FILEHEAD"
+FILEHEAD
 
 Writing MESS
 ------------
@@ -80,9 +88,7 @@ Writing MESS
 The special MESS types keyword can be written as follows:
 
 
->>> from ecl_data_io.types import MESS
->>> from ecl_data_io import write, MESS
->>> write("output.EGRID", [("MESSHEAD", MESS)])
+>>> eclio.write("output.EGRID", [("MESSHEAD", eclio.MESS)])
 
 array types
 -----------
@@ -110,12 +116,10 @@ Say you want to update the first keyword name `"OLD_NAME"`, change the array
 to `new_array` and the name to `NEW_NAME`, then that can be done
 with the following:
 
->>> import ecl_data_io as eclio
->>>
->>> new_array = ...
+>>> new_array = [2]
 >>>
 >>> with open("my_grid.egrid", "br+") as f: # Open with read and write
 ...     for entry in eclio.lazy_read(f):
-...         if entry.read_keyword() == "OLD_NAME":
-...             entry.update(keyword="NEW_NAME", array=new_array)
+...         if entry.read_keyword() == "FILEHEAD":
+...             entry.update(keyword="FILEHEAD", array=new_array)
 ...             break

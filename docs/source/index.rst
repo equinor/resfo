@@ -9,6 +9,7 @@ ecl-data-io: Low level IO for ecl files
 
    example_usage
    the_file_format
+   error_handling
    developer_guide
    api_doc
 
@@ -25,15 +26,32 @@ Quick Start Guide
 Using the library
 -----------------
 
+... testsetup::
+
+    >>> import ecl_data_io as eclio
+    >>>
+    >>> eclio.write(
+    ...     "my_grid.egrid",
+    ...     [
+    ...         ("FILEHEAD", []),
+    ...         ("GRIDHEAD", []),
+    ...         ("COORD", []),
+    ...         ("ZCORN", []),
+    ...         ("ACTNUM", []),
+    ...         ("MAPAXES", []),
+    ...     ],
+    ...     fileformat=eclio.Format.FORMATTED,
+    ... )
+
 >>> import ecl_data_io as eclio
 >>> for kw, arr in eclio.read("my_grid.egrid"):
-...     print(kw)
-"FILEHEAD"
-"GRIDHEAD"
-"COORD"
-"ZCORN"
-"ACTNUM"
-"MAPAXES"
+...     print(kw.strip())
+FILEHEAD
+GRIDHEAD
+COORD
+ZCORN
+ACTNUM
+MAPAXES
 
 
 For more see :ref:`example-usage`.

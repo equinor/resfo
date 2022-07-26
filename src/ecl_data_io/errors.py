@@ -1,4 +1,4 @@
-class EclParsingError(Exception):
+class EclParsingError(ValueError):
     """
     Indicates an error occurred during reading of an ecl file.
     """
@@ -6,7 +6,7 @@ class EclParsingError(Exception):
     pass
 
 
-class EclWriteError(Exception):
+class EclWriteError(ValueError):
     """
     Indicates an error occurred during writing of an ecl file.
     """
