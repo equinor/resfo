@@ -55,6 +55,7 @@ def get_stream(filepath, fileformat, mode="r"):
         else:
             return open(filepath, mode + "b"), True
     else:
+        filepath.seek(0)
         return filepath, False
 
 
