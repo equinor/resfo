@@ -110,8 +110,7 @@ def test_unformatted_read_type_resolution(tmp_path, contents, expected_type):
         ([True], b"LOGI"),
     ],
 )
-def test_formatted_write_type_resolution(tmp_path, data, expected_type):
-
+def test_unformatted_write_type_resolution(tmp_path, data, expected_type):
     file = tmp_path / "test.txt"
 
     with file.open("wb") as f:
