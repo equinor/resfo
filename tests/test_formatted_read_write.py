@@ -24,7 +24,6 @@ from ecl_data_io._formatted.write import formatted_write
     ],
 )
 def test_formatted_write(container, data, tmp_path):
-
     with (tmp_path / "test.data").open("wt") as fh:
         formatted_write(fh, container(data))
 
