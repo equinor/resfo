@@ -15,7 +15,6 @@ import pytest
     ],
 )
 def test_formatted_read_type_resolution(tmp_path, contents, expected_type):
-
     with (tmp_path / "test.txt").open("w") as f:
         f.write(contents)
 
@@ -37,7 +36,6 @@ def test_formatted_read_type_resolution(tmp_path, contents, expected_type):
     ],
 )
 def test_formatted_write_type_resolution(tmp_path, data, expected_type):
-
     file = tmp_path / "test.txt"
 
     with file.open("w") as f:
@@ -92,7 +90,6 @@ def keyword_start(ecl_type):
     ],
 )
 def test_unformatted_read_type_resolution(tmp_path, contents, expected_type):
-
     with (tmp_path / "test.txt").open("wb") as f:
         f.write(contents)
 
