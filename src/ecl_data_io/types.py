@@ -23,8 +23,10 @@ that results in a warning.
 
 """
 import warnings
+from typing import Union
 
 import numpy as np
+from numpy.typing import ArrayLike
 
 # np dtype for ecl types with fixed width
 static_dtypes = {
@@ -43,6 +45,9 @@ class MESS:
     """
 
     pass
+
+
+ArrayValue = Union[ArrayLike, MESS]
 
 
 def to_np_type(type_keyword):
