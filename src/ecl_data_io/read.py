@@ -1,11 +1,15 @@
-from pathlib import Path
+from typing import TYPE_CHECKING, Iterator, List, Optional, Tuple
 
 from ecl_data_io._formatted.read import FormattedEclArray
 from ecl_data_io._unformatted.read import UnformattedEclArray
+from ecl_data_io.array_entry import EclArray
 from ecl_data_io.format import Format, check_correct_mode, get_stream, guess_format
 
+if TYPE_CHECKING:
+    from .types import ArrayValue
 
-def read(*args, **kwargs):
+
+def read(*args, **kwargs) -> List[Tuple[str, "ArrayValue"]]:
     """
     Read the contents of a ecl file and return a list of
     tuples (keyword, array). Takes the same parameters as
@@ -16,7 +20,7 @@ def read(*args, **kwargs):
     ]
 
 
-def lazy_read(filelike, fileformat=None):
+def lazy_read(filelike, fileformat: Optional[Format] = None) -> Iterator[EclArray]:
     """
     Reads the contents of an ecl file and generates the entries
     of that file. Each entry has a entry.read_keyword() and

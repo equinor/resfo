@@ -1,4 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Optional, Union
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
+
+    from .types import ArrayValue
 
 
 class EclArray(ABC):
@@ -35,7 +41,7 @@ class EclArray(ABC):
             self._read()
         return self._is_eof
 
-    def read_keyword(self):
+    def read_keyword(self) -> str:
         """
         Read the keyword from the ecl file.
 
@@ -43,9 +49,9 @@ class EclArray(ABC):
         """
         if self._keyword is None:
             self._read()
-        return self._keyword
+        return self._keyword  # type: ignore
 
-    def read_length(self):
+    def read_length(self) -> int:
         """
         Read the length from the ecl file.
 
@@ -53,10 +59,10 @@ class EclArray(ABC):
         """
         if self._length is None:
             self._read()
-        return self._length
+        return self._length  # type: ignore
 
     @abstractmethod
-    def read_array(self):
+    def read_array(self) -> "ArrayValue":
         """
         Read the array from the unformatted ecl file.
 
@@ -64,16 +70,20 @@ class EclArray(ABC):
         """
         pass
 
-    def read_type(self):
+    def read_type(self) -> Union[str, bytes]:
         """
-        The type given in the header of the array
+        The type given in the header of the array.
+        In case of unformatted file this will be bytes, for
+        unformatted files it is str.
         """
         if self._type is None:
             self._read()
-        return self._type
+        return self._type  # type: ignore
 
     @abstractmethod
-    def update(self, *, keyword=None, array=None):
+    def update(
+        self, *, keyword: Optional[str] = None, array: Optional["ArrayLike"] = None
+    ):
         """
         Updates the entry with the given new data.
 
