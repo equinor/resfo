@@ -41,7 +41,7 @@ def guess_format(filelike):
         return Format.FORMATTED
 
 
-def get_stream(filepath, fileformat, mode="r"):
+def get_stream(filepath, fileformat: Format, mode: str = "r"):
     """
     Openes the given file with the correct mode (text or binary)
     based on fileformat.
@@ -58,7 +58,7 @@ def get_stream(filepath, fileformat, mode="r"):
         return filepath, False
 
 
-def check_correct_mode(stream, fileformat):
+def check_correct_mode(stream, fileformat: Format):
     """
     Checks that the stream is the correct mode (text or binary) for the given
     fileformat.

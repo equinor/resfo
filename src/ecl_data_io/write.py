@@ -1,11 +1,17 @@
-from pathlib import Path
+from typing import Dict, Sequence, Tuple, Union
 
 from ecl_data_io._formatted.write import formatted_write
 from ecl_data_io._unformatted.write import unformatted_write
 from ecl_data_io.format import Format, check_correct_mode, get_stream
 
+from .types import ArrayValue
 
-def write(filelike, contents, fileformat=Format.UNFORMATTED):
+
+def write(
+    filelike,
+    contents: Union[Sequence[Tuple[str, ArrayValue]], Dict[str, ArrayValue]],
+    fileformat: Format = Format.UNFORMATTED,
+):
     """
     Write the given contents to the given file in ecl format.
 
