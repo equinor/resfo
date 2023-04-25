@@ -1,6 +1,6 @@
-from pkg_resources import DistributionNotFound, get_distribution
+from importlib.metadata import version, PackageNotFoundError
 
 try:
-    version = get_distribution(__name__).version
-except DistributionNotFound:
+    version = version("ecl-data-io")
+except PackageNotFoundError:
     version = "0.0.0"
