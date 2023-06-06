@@ -17,7 +17,7 @@ require in order to run tests:
 
 .. code-block:: console
 
-    pip install -r dev-requirements.txt
+    pip install -e ".[dev]"
 
 At last, you can use pytest to run the tests
 
