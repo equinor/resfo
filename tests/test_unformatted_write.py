@@ -59,7 +59,7 @@ def test_write_array_header_not_a_type():
         (np.array([1.0], dtype=np.float64), np.array([1.0], dtype=np.float64)),
         (np.array([True, False], dtype=np.bool_), np.array([-1, 0], dtype=np.int32)),
         (np.array([10, 20], dtype=np.int8), np.array([10, 20], dtype=np.int32)),
-        (np.array([1.0], dtype=np.float128), np.array([1.0], dtype=np.float64)),
+        (np.array([1.0], dtype=np.longdouble), np.array([1.0], dtype=np.float64)),
     ],
 )
 def test_cast_array_to_ecl(array, expected_array):
