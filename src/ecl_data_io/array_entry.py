@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional, Union
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
-    from .types import ArrayValue
+    from .types import ReadArrayValue
 
 
 class EclArray(ABC):
@@ -62,7 +62,7 @@ class EclArray(ABC):
         return self._length  # type: ignore
 
     @abstractmethod
-    def read_array(self) -> "ArrayValue":
+    def read_array(self) -> "ReadArrayValue":
         """
         Read the array from the unformatted ecl file.
 
