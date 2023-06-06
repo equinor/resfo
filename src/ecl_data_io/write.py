@@ -4,12 +4,12 @@ from ecl_data_io._formatted.write import formatted_write
 from ecl_data_io._unformatted.write import unformatted_write
 from ecl_data_io.format import Format, check_correct_mode, get_stream
 
-from .types import ArrayValue
+from .types import WriteArrayValue
 
 
 def write(
     filelike,
-    contents: Union[Sequence[Tuple[str, ArrayValue]], Dict[str, ArrayValue]],
+    contents: Union[Sequence[Tuple[str, WriteArrayValue]], Dict[str, WriteArrayValue]],
     fileformat: Format = Format.UNFORMATTED,
 ):
     """

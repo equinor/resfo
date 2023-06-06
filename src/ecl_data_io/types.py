@@ -47,7 +47,8 @@ class MESS:
     pass
 
 
-ArrayValue = Union[ArrayLike, MESS]
+ReadArrayValue = Union[np.ndarray, MESS]
+WriteArrayValue = Union[ArrayLike, MESS]
 
 
 def to_np_type(type_keyword):

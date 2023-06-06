@@ -6,10 +6,10 @@ from ecl_data_io.array_entry import EclArray
 from ecl_data_io.format import Format, check_correct_mode, get_stream, guess_format
 
 if TYPE_CHECKING:
-    from .types import ArrayValue
+    from .types import ReadArrayValue
 
 
-def read(*args, **kwargs) -> List[Tuple[str, "ArrayValue"]]:
+def read(*args, **kwargs) -> List[Tuple[str, "ReadArrayValue"]]:
     """
     Read the contents of a ecl file and return a list of
     tuples (keyword, array). Takes the same parameters as
