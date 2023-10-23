@@ -1,5 +1,5 @@
 =======================================
-ecl-data-io: Low level IO for ecl files
+resfo: Low level IO for res files
 =======================================
 
 .. toctree::
@@ -20,7 +20,7 @@ Quick Start Guide
 
 .. code-block:: console
 
-   pip install ecl_data_io
+   pip install resfo
 
 
 Using the library
@@ -28,9 +28,9 @@ Using the library
 
 .. testsetup::
 
-    >>> import ecl_data_io as eclio
+    >>> import resfo
     >>>
-    >>> eclio.write(
+    >>> resfo.write(
     ...     "my_grid.egrid",
     ...     [
     ...         ("FILEHEAD", []),
@@ -40,11 +40,11 @@ Using the library
     ...         ("ACTNUM", []),
     ...         ("MAPAXES", []),
     ...     ],
-    ...     fileformat=eclio.Format.FORMATTED,
+    ...     fileformat=resfo.Format.FORMATTED,
     ... )
 
->>> import ecl_data_io as eclio
->>> for kw, arr in eclio.read("my_grid.egrid"):
+>>> import resfo
+>>> for kw, arr in resfo.read("my_grid.egrid"):
 ...     print(kw.strip())
 FILEHEAD
 GRIDHEAD

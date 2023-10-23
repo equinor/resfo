@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from ecl_data_io._formatted.read import FormattedEclArray
-from ecl_data_io._formatted.write import formatted_write
+from resfo._formatted.read import FormattedArray
+from resfo._formatted.write import formatted_write
 
 
 @pytest.mark.filterwarnings("ignore:downcasting")
@@ -28,7 +28,7 @@ def test_formatted_write(container, data, tmp_path):
         formatted_write(fh, container(data))
 
     with (tmp_path / "test.data").open("rt") as fh:
-        out_records = list(FormattedEclArray.parse(fh))
+        out_records = list(FormattedArray.parse(fh))
         out_keywords = [r.read_keyword() for r in out_records]
         out_arrays = [r.read_array() for r in out_records]
         out_lengths = [r.read_length() for r in out_records]

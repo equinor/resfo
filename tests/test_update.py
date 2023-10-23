@@ -5,9 +5,9 @@ import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
 
-from ecl_data_io import MESS, lazy_read, read, write
+from resfo import MESS, lazy_read, read, write
 
-from .generators import ecl_datas, float_arrays, keywords
+from .generators import resfo_datas, float_arrays, keywords
 
 
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
@@ -50,7 +50,7 @@ def test_update_incorrect_mode_raises(filelike):
 
 
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
-@given(data=ecl_datas)
+@given(data=resfo_datas)
 def test_update_preserves_type(filelike, data):
     write(filelike, data)
     with open(filelike, "br+") as stream:

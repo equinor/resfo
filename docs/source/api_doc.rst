@@ -1,16 +1,16 @@
 API-Doc
 =======
 
-.. autofunction:: ecl_data_io.lazy_read
+.. autofunction:: resfo.lazy_read
 
-.. autofunction:: ecl_data_io.read
+.. autofunction:: resfo.read
 
-.. autofunction:: ecl_data_io.write
+.. autofunction:: resfo.write
 
-.. autoclass:: ecl_data_io.Format
+.. autoclass:: resfo.Format
 
-.. autoclass:: ecl_data_io.MESS
+.. autoclass:: resfo.MESS
 
-.. autoclass:: ecl_data_io.array_entry.EclArray
+.. autoclass:: resfo.array_entry.ResArray
    :exclude-members: is_eof, parse
    :members:

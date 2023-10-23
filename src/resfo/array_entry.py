@@ -7,18 +7,18 @@ if TYPE_CHECKING:
     from .types import ReadArrayValue
 
 
-class EclArray(ABC):
+class ResArray(ABC):
     """
-    An array entry in a ecl file.
+    An array entry in a res file.
 
     This class is not ment to be constructed directly, but rather
-    generated e.g. :py:meth:`ecl_data_io.lazy_read`.
+    generated e.g. :py:meth:`resfo.lazy_read`.
     """
 
     def __init__(self, stream):
         """
-        :param stream: The opened ecl file with stream.peek() at
-            the start of the ecl array.
+        :param stream: The opened res file with stream.peek() at
+            the start of the res array.
         """
         self.start = stream.tell()
         self.stream = stream
@@ -43,7 +43,7 @@ class EclArray(ABC):
 
     def read_keyword(self) -> str:
         """
-        Read the keyword from the ecl file.
+        Read the keyword from the res file.
 
         :returns: The keyword as a 8 character string.
         """
@@ -53,7 +53,7 @@ class EclArray(ABC):
 
     def read_length(self) -> int:
         """
-        Read the length from the ecl file.
+        Read the length from the res file.
 
         :returns: The length of the array in number of entries.
         """
@@ -64,7 +64,7 @@ class EclArray(ABC):
     @abstractmethod
     def read_array(self) -> "ReadArrayValue":
         """
-        Read the array from the unformatted ecl file.
+        Read the array from the unformatted res file.
 
         :returns: numpy array of values.
         """
@@ -110,9 +110,9 @@ class EclArray(ABC):
     @classmethod
     def parse(cls, stream):
         """
-        Parse an ecl file from the given opened file handle.
+        Parse an res file from the given opened file handle.
 
-        Is a generator of EclArrays
+        Is a generator of ResArrays
         """
         record = cls(stream)
 

@@ -1,10 +1,9 @@
 import numpy as np
 from hypothesis import HealthCheck, given, settings
 from numpy.testing import assert_allclose
+from resfo import MESS, read, write
 
-from ecl_data_io import MESS, read, write
-
-from .generators import ecl_datas, formats
+from .generators import formats, resfo_datas
 
 
 def same_keyword(a, b):
@@ -12,7 +11,7 @@ def same_keyword(a, b):
 
 
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture], print_blob=True)
-@given(file_format=formats, data=ecl_datas)
+@given(file_format=formats, data=resfo_datas)
 def test_read_write(filelike, file_format, data):
     write(filelike, data, fileformat=file_format)
     for (kw, arr), (okw, oarr) in zip(data, read(filelike)):

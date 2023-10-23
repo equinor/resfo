@@ -1,29 +1,29 @@
 Error Handling
 ==============
 
-Reading of ecl files will throw :py:class:`ecl_data_io.EclParsingError`
-when the given file does not contain valid ecl data:
+Reading of res files will throw :py:class:`resfo.ResfoParsingError`
+when the given file does not contain valid res data:
 
 .. doctest::
 
-    >>> from ecl_data_io import read, write, EclParsingError, EclWriteError
+    >>> from resfo import read, write, ResfoParsingError, ResfoWriteError
     >>> from io import StringIO
     >>>
-    >>> file_contents = StringIO("Not valid ecl content")
+    >>> file_contents = StringIO("Not valid res content")
     >>> try:
     ...   read(file_contents)
-    ... except EclParsingError as e:
+    ... except ResfoParsingError as e:
     ...   print(e)
     Expected "'" before keyword, got N at 1
 
-Similarly, write will produce :py:class:`ecl_data_io.EclWriteError`
+Similarly, write will produce :py:class:`resfo.ResfoWriteError`
 when the given data is not suitable for writing.
 
 .. doctest::
 
     >>> try:
     ...   write("my_file.egrid", [("FILEHEAD", ["a"*100])])
-    ... except EclWriteError as e:
+    ... except ResfoWriteError as e:
     ...   print(e)
     Could not convert numpy type <U100...
 

@@ -1,8 +1,8 @@
 import numpy as np
 
-import ecl_data_io.types as ecl_types
-from ecl_data_io.array_entry import EclArray
-from ecl_data_io.errors import EclParsingError
+import resfo.types as res_types
+from resfo.array_entry import ResArray
+from resfo.errors import ResfoParsingError
 
 
 def drop_while_space(stream):
@@ -16,9 +16,9 @@ def drop_while_space(stream):
     stream.seek(first_non_space)
 
 
-class FormattedEclArray(EclArray):
+class FormattedArray(ResArray):
     """
-    An array entry in an formatted ecl file.
+    An array entry in an formatted res file.
     """
 
     def __init__(self, stream):
@@ -53,7 +53,7 @@ class FormattedEclArray(EclArray):
         elif current_char == "F":
             return False
         else:
-            raise EclParsingError(f"Could not parse logical value {current_char}")
+            raise ResfoParsingError(f"Could not parse logical value {current_char}")
 
     def _read_quote_separated(self):
         """
@@ -63,7 +63,7 @@ class FormattedEclArray(EclArray):
         drop_while_space(self.stream)
         current_char = self.stream.read(1)
         if current_char != "'":
-            raise EclParsingError(
+            raise ResfoParsingError(
                 f'Expected "\'" before keyword, got {current_char} at {self.stream.tell()}'
             )
         word = ""
@@ -73,7 +73,7 @@ class FormattedEclArray(EclArray):
             word += current_char
             current_char = self.stream.read(1)
             if not current_char:
-                raise EclParsingError(
+                raise ResfoParsingError(
                     f"Reached end-of-file while reading keyword {word}"
                 )
 
@@ -91,17 +91,17 @@ class FormattedEclArray(EclArray):
             word += current_char
             current_char = self.stream.read(1)
             if not current_char:
-                raise EclParsingError(
+                raise ResfoParsingError(
                     f"Reached end-of-file while reading number {word} at {self.stream.tell()}"
                 )
 
         if not current_char.isspace() and current_char:
-            raise EclParsingError(
+            raise ResfoParsingError(
                 f"Expected space after number at {self.stream.tell()} got {current_char}"
             )
 
         if not word:
-            raise EclParsingError(f"Could not read number at {self.stream.tell()}")
+            raise ResfoParsingError(f"Could not read number at {self.stream.tell()}")
 
         return word.replace("D", "E")
 
@@ -124,20 +124,20 @@ class FormattedEclArray(EclArray):
         self.stream.seek(self._data_start)
         drop_while_space(self.stream)
         if self._type == b"MESS":
-            return ecl_types.MESS
-        if ecl_types.is_character_type(self._type):
+            return res_types.MESS
+        if res_types.is_character_type(self._type):
             return np.array([self._read_quote_separated() for i in range(self._length)])
         elif self._type == b"LOGI":
             return np.array([self._read_logical() for i in range(self._length)])
         else:
             return np.array(
                 [self._read_number() for i in range(self._length)],
-                dtype=ecl_types.to_np_type(self._type),
+                dtype=res_types.to_np_type(self._type),
             )
 
     def _read(self):
         """
-        See ecl_data_io.array_entry.EclArray._read()
+        See resfo.array_entry.ResArray._read()
         """
         self.stream.seek(self.start)
         drop_while_space(self.stream)

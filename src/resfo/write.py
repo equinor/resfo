@@ -1,8 +1,8 @@
 from typing import Dict, Sequence, Tuple, Union
 
-from ecl_data_io._formatted.write import formatted_write
-from ecl_data_io._unformatted.write import unformatted_write
-from ecl_data_io.format import Format, check_correct_mode, get_stream
+from resfo._formatted.write import formatted_write
+from resfo._unformatted.write import unformatted_write
+from resfo.format import Format, check_correct_mode, get_stream
 
 from .types import WriteArrayValue
 
@@ -13,7 +13,7 @@ def write(
     fileformat: Format = Format.UNFORMATTED,
 ):
     """
-    Write the given contents to the given file in ecl format.
+    Write the given contents to the given file in res format.
 
     :param filelike: Either filename, pathlib.Path or stream
         to write file to. For fileformat=Format.UNFORMATTED the
@@ -22,12 +22,12 @@ def write(
     :param contents: list or iterable of tuples (kw, arr) where keyword
         is the keyword, and arr is a numpy arraylike of values. The
         keyword must have exactly 8 characters and the type of the array
-        will be converted according to ecl_data_io.types.to_np_type
-    :param fileformat: Either ecl_data_io.Format.FORMATTED for ascii
-        format or ecl_data_io.Format.UNFORMATTED for binary format.
+        will be converted according to resfo.types.to_np_type
+    :param fileformat: Either resfo.Format.FORMATTED for ascii
+        format or resfo.Format.UNFORMATTED for binary format.
 
-    :raises ecl_data_io.EclWriteError: If the given contents cannot be
-        written to an ecl file.
+    :raises resfo.ResfoWriteError: If the given contents cannot be
+        written to an res file.
 
     .. note::
         If given a file to be open (as opposed to a stream), the errors
