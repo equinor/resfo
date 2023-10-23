@@ -1,1 +1,1 @@
-ecl-data-io has been renamed to [resfo](github.com/equinor/resfo)
+ecl-data-io has been renamed to [resfo](https://github.com/equinor/resfo)
