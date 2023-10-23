@@ -1,7 +1,6 @@
 import numpy as np
 
 import ecl_data_io.types as ecl_types
-from ecl_data_io._formatted.write import write_entry
 from ecl_data_io.array_entry import EclArray
 from ecl_data_io.errors import EclParsingError
 
