@@ -6,7 +6,7 @@ from pathlib import Path
 @unique
 class Format(Enum):
     """
-    The format of an ecl file, either FORMATTED for ascii
+    The format of an res file, either FORMATTED for ascii
     or UNFORMATTED for binary.
     """
 
@@ -46,7 +46,7 @@ def get_stream(filepath, fileformat: Format, mode: str = "r"):
     Openes the given file with the correct mode (text or binary)
     based on fileformat.
     :param filepath: Either a filename or pathlib.Path
-    :param fileformat: A ecl_data_io.Format.
+    :param fileformat: A resfo.Format.
     :returns: The opened file.
     """
     if isinstance(filepath, (str, Path)):

@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING, Iterator, List, Optional, Tuple
 
-from ecl_data_io._formatted.read import FormattedEclArray
-from ecl_data_io._unformatted.read import UnformattedEclArray
-from ecl_data_io.array_entry import EclArray
-from ecl_data_io.format import Format, check_correct_mode, get_stream, guess_format
+from resfo._formatted.read import FormattedArray
+from resfo._unformatted.read import UnformattedResArray
+from resfo.array_entry import ResArray
+from resfo.format import Format, check_correct_mode, get_stream, guess_format
 
 if TYPE_CHECKING:
     from .types import ReadArrayValue
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 def read(*args, **kwargs) -> List[Tuple[str, "ReadArrayValue"]]:
     """
-    Read the contents of a ecl file and return a list of
+    Read the contents of a res file and return a list of
     tuples (keyword, array). Takes the same parameters as
     lazy_read, but differs in return type
     """
@@ -20,9 +20,9 @@ def read(*args, **kwargs) -> List[Tuple[str, "ReadArrayValue"]]:
     ]
 
 
-def lazy_read(filelike, fileformat: Optional[Format] = None) -> Iterator[EclArray]:
+def lazy_read(filelike, fileformat: Optional[Format] = None) -> Iterator[ResArray]:
     """
-    Reads the contents of an ecl file and generates the entries
+    Reads the contents of an res file and generates the entries
     of that file. Each entry has a entry.read_keyword() and
     entry.read_array() method which will return the corresponding
     data, but only upon request. This requires the user to
@@ -39,12 +39,12 @@ def lazy_read(filelike, fileformat: Optional[Format] = None) -> Iterator[EclArra
         to write file to. For fileformat=Format.UNFORMATTED the
         stream must be in binary mode and for fileformat=Format.FORMATTED
         in text mode.
-    :param fileformat: Either ecl_data_io.Format.FORMATTED for ascii
-        format, ecl_data_io.Format.UNFORMATTED for binary formatted files
+    :param fileformat: Either resfo.Format.FORMATTED for ascii
+        format, resfo.Format.UNFORMATTED for binary formatted files
         or None for guess.
 
-    :raises ecl_data_io.EclParsingError: If the file is not a valid
-        ecl file.
+    :raises resfo.ResfoParsingError: If the file is not a valid
+        res file.
 
     .. note::
         If given a file to be open (as opposed to a stream), the errors
@@ -62,9 +62,9 @@ def lazy_read(filelike, fileformat: Optional[Format] = None) -> Iterator[EclArra
 
     try:
         if fileformat == Format.FORMATTED:
-            yield from FormattedEclArray.parse(stream)
+            yield from FormattedArray.parse(stream)
         else:
-            yield from UnformattedEclArray.parse(stream)
+            yield from UnformattedResArray.parse(stream)
     finally:
         if didopen:
             stream.close()

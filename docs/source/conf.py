@@ -1,4 +1,4 @@
-project = "ecl-data-io"
+project = "resfo"
 copyright = "2022, Equinor"
 author = "Equinor"
 release = "1.0.0"

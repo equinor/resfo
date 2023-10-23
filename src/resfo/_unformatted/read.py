@@ -1,31 +1,30 @@
 import io
 
 import numpy as np
+import resfo.types as res_types
+from resfo._unformatted.common import bytes_in_array, group_len, item_size
+from resfo._unformatted.write import write_array_like
+from resfo.array_entry import ResArray
+from resfo.errors import ResfoParsingError
 
-import ecl_data_io.types as ecl_types
-from ecl_data_io._unformatted.common import bytes_in_array, group_len, item_size
-from ecl_data_io._unformatted.write import write_array_like
-from ecl_data_io.array_entry import EclArray
-from ecl_data_io.errors import EclParsingError
 
-
-class UnformattedEclArray(EclArray):
+class UnformattedResArray(ResArray):
     """
-    An array entry in a unformatted ecl file.
+    An array entry in a unformatted res file.
     """
 
     def read_array(self):
         """
-        Read the array from the unformatted ecl file.
+        Read the array from the unformatted res file.
         :returns: numpy array of values.
         """
         if self._data_start is None:
             self._read()
         if self._type == b"MESS":
-            return ecl_types.MESS
+            return res_types.MESS
         self.stream.seek(self._data_start)
         g_len = group_len(self._type)
-        np_type = ecl_types.to_np_type(self._type)
+        np_type = res_types.to_np_type(self._type)
         array = np.zeros(shape=(self._length,), dtype=np_type)
         to_read = self._length
         type_len = item_size(self._type)
@@ -51,15 +50,15 @@ class UnformattedEclArray(EclArray):
         if keyword is None:
             keyword = self.read_keyword()
 
-        if array is not ecl_types.MESS:
+        if array is not res_types.MESS:
             if array is not None:
                 array = np.asarray(array)
             else:
                 array = self.read_array()
-            if array is not ecl_types.MESS and self.read_length() != array.size:
+            if array is not res_types.MESS and self.read_length() != array.size:
                 raise ValueError("Cannot update array with different size")
 
-        if self.read_type() != ecl_types.from_np_dtype(array):
+        if self.read_type() != res_types.from_np_dtype(array):
             raise ValueError("Cannot update array with different type")
 
         self.stream.seek(self.start)
@@ -74,7 +73,7 @@ class UnformattedEclArray(EclArray):
         """
         value = int.from_bytes(self.stream.read(4), byteorder="big", signed=True)
         if value != expected_value:
-            raise EclParsingError(
+            raise ResfoParsingError(
                 f"Unexpected size of record {value} ({value.to_bytes(4, byteorder='big', signed=True)})"
             )
 
@@ -85,7 +84,7 @@ class UnformattedEclArray(EclArray):
         """
         self._keyword = self.stream.read(8).decode("ascii")
         if not self._keyword or len(self._keyword) < 8:
-            raise EclParsingError("Reached end-of-file while reading keyword")
+            raise ResfoParsingError("Reached end-of-file while reading keyword")
 
     def _read_type(self):
         """
@@ -94,7 +93,7 @@ class UnformattedEclArray(EclArray):
         """
         self._type = self.stream.read(4)
         if not self._type or len(self._type) < 4:
-            raise EclParsingError("Reached end-of-file while reading type")
+            raise ResfoParsingError("Reached end-of-file while reading type")
 
     def _read_length(self):
         """
@@ -102,13 +101,13 @@ class UnformattedEclArray(EclArray):
         """
         length_bytes = self.stream.read(4)
         if not length_bytes or len(length_bytes) < 4:
-            raise EclParsingError("Reached end-of-file while reading length")
+            raise ResfoParsingError("Reached end-of-file while reading length")
 
         return int.from_bytes(length_bytes, byteorder="big", signed=True)
 
     def _read(self):
         """
-        See ecl_data_io.array_entry.EclArray._read()
+        See resfo.array_entry.ResArray._read()
         """
         self.stream.seek(self.start)
         start_marker = self.stream.read(4)
@@ -117,7 +116,7 @@ class UnformattedEclArray(EclArray):
             return
         start_marker_value = int.from_bytes(start_marker, byteorder="big", signed=True)
         if start_marker_value != 16:
-            raise EclParsingError(
+            raise ResfoParsingError(
                 f"Unexpected size of record {start_marker_value} ({start_marker})"
             )
         self._read_keyword()
@@ -130,7 +129,7 @@ class UnformattedEclArray(EclArray):
             previous_keyword = self._keyword
             self._read_keyword()
             if previous_keyword != self._keyword:
-                raise EclParsingError(
+                raise ResfoParsingError(
                     "x231 type record was not followed "
                     f"by record with same keyword, found {self._keyword}"
                     f" expected {previous_keyword}"
@@ -143,9 +142,9 @@ class UnformattedEclArray(EclArray):
         if self._length == 0:
             type_len = 0
         if type_len is None:
-            raise EclParsingError(f"Unexpected item type {self._type}")
+            raise ResfoParsingError(f"Unexpected item type {self._type}")
         if type_len <= 0 and self._length != 0:
-            raise EclParsingError(
+            raise ResfoParsingError(
                 f"Found keyword of type {self._type} which"
                 f"has item length {type_len} which requires 0 number of"
                 f"elements, but found {self._length} amount of elements."

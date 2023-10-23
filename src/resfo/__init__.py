@@ -1,6 +1,6 @@
-import ecl_data_io.version
+import resfo.version
 
-from .errors import EclParsingError, EclWriteError
+from .errors import ResfoParsingError, ResfoWriteError
 from .format import Format
 from .read import lazy_read, read
 from .types import MESS
@@ -9,7 +9,7 @@ from .write import write
 __author__ = "Equinor"
 __email__ = "fg_sib-scout@equinor.com"
 
-__version__ = ecl_data_io.version.version
+__version__ = resfo.version.version
 
 __all__ = [
     "read",
@@ -17,6 +17,6 @@ __all__ = [
     "write",
     "Format",
     "MESS",
-    "EclParsingError",
-    "EclWriteError",
+    "ResfoParsingError",
+    "ResfoWriteError",
 ]

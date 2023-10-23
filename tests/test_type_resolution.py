@@ -1,6 +1,6 @@
-import ecl_data_io
 import numpy as np
 import pytest
+import resfo
 
 
 @pytest.mark.parametrize(
@@ -19,7 +19,7 @@ def test_formatted_read_type_resolution(tmp_path, contents, expected_type):
         f.write(contents)
 
     with (tmp_path / "test.txt").open("r") as f:
-        ((specgrid, arr),) = ecl_data_io.read(f)
+        ((specgrid, arr),) = resfo.read(f)
 
     assert arr.dtype == expected_type
 
@@ -39,13 +39,13 @@ def test_formatted_write_type_resolution(tmp_path, data, expected_type):
     file = tmp_path / "test.txt"
 
     with file.open("w") as f:
-        ecl_data_io.write(f, {"SPECGRID": data}, ecl_data_io.Format.FORMATTED)
+        resfo.write(f, {"SPECGRID": data}, resfo.Format.FORMATTED)
 
     assert expected_type in file.read_text()
 
 
-def keyword_start(ecl_type):
-    return b"\x00\x00\x00\x10SPECGRID\x00\x00\x00\x01" + ecl_type + b"\x00\x00\x00\x10"
+def keyword_start(res_type):
+    return b"\x00\x00\x00\x10SPECGRID\x00\x00\x00\x01" + res_type + b"\x00\x00\x00\x10"
 
 
 @pytest.mark.parametrize(
@@ -94,7 +94,7 @@ def test_unformatted_read_type_resolution(tmp_path, contents, expected_type):
         f.write(contents)
 
     with (tmp_path / "test.txt").open("rb") as f:
-        ((specgrid, arr),) = ecl_data_io.read(f)
+        ((specgrid, arr),) = resfo.read(f)
 
     assert arr.dtype == expected_type
 
@@ -114,6 +114,6 @@ def test_unformatted_write_type_resolution(tmp_path, data, expected_type):
     file = tmp_path / "test.txt"
 
     with file.open("wb") as f:
-        ecl_data_io.write(f, {"SPECGRID": data}, ecl_data_io.Format.UNFORMATTED)
+        resfo.write(f, {"SPECGRID": data}, resfo.Format.UNFORMATTED)
 
     assert expected_type in file.read_bytes()

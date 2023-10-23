@@ -1,6 +1,6 @@
 """
 This module implements the read and write
-functionality for formatted ecl files (see
+functionality for formatted res files (see
         :ref:`formatted-format`) and is
-not part of the ecl-data-io public API.
+not part of the resfo public API.
 """

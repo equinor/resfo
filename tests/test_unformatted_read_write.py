@@ -3,8 +3,8 @@ import io
 import numpy as np
 import pytest
 
-from ecl_data_io._unformatted.read import UnformattedEclArray
-from ecl_data_io._unformatted.write import unformatted_write
+from resfo._unformatted.read import UnformattedResArray
+from resfo._unformatted.write import unformatted_write
 
 
 @pytest.mark.filterwarnings("ignore:casting")
@@ -35,7 +35,7 @@ def test_unformatted_write(container, data):
     buf = io.BytesIO()
     unformatted_write(buf, container(data))
     buf.seek(0)
-    out_records = list(UnformattedEclArray.parse(buf))
+    out_records = list(UnformattedResArray.parse(buf))
     out_keywords = [r.read_keyword() for r in out_records]
     out_arrays = [r.read_array() for r in out_records]
     out_lengths = [r.read_length() for r in out_records]

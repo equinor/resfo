@@ -2,14 +2,13 @@ import io
 
 import numpy as np
 import pytest
+import resfo._unformatted.read as uwrite
 
-import ecl_data_io._unformatted.read as ecl_io_uf
 
-
-def test_unformatted_ecl_array_eof():
+def test_unformatted_array_eof():
     buf = io.BytesIO(b"")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
-    assert ecl_arr.is_eof
+    arr = uwrite.UnformattedResArray(buf)
+    assert arr.is_eof
 
 
 @pytest.fixture
@@ -20,26 +19,26 @@ def simple_unformatted_buffer():
     )
 
 
-def test_unformatted_ecl_array_simple_read(simple_unformatted_buffer):
-    ecl_arr = ecl_io_uf.UnformattedEclArray(simple_unformatted_buffer)
-    assert not ecl_arr.is_eof
-    assert ecl_arr.read_keyword() == "KEYWORD1"
-    assert ecl_arr.read_type() == b"INTE"
-    assert ecl_arr.read_length() == 1
-    assert np.array_equal(ecl_arr.read_array(), np.zeros(shape=(1,), dtype=">i4"))
+def test_unformatted_array_simple_read(simple_unformatted_buffer):
+    arr = uwrite.UnformattedResArray(simple_unformatted_buffer)
+    assert not arr.is_eof
+    assert arr.read_keyword() == "KEYWORD1"
+    assert arr.read_type() == b"INTE"
+    assert arr.read_length() == 1
+    assert np.array_equal(arr.read_array(), np.zeros(shape=(1,), dtype=">i4"))
 
 
-def test_unformatted_ecl_array_simple_type_loads(simple_unformatted_buffer):
-    ecl_arr = ecl_io_uf.UnformattedEclArray(simple_unformatted_buffer)
-    assert ecl_arr.read_type() == b"INTE"
+def test_unformatted_array_simple_type_loads(simple_unformatted_buffer):
+    arr = uwrite.UnformattedResArray(simple_unformatted_buffer)
+    assert arr.read_type() == b"INTE"
 
 
-def test_unformatted_ecl_array_simple_length_loads(simple_unformatted_buffer):
-    ecl_arr = ecl_io_uf.UnformattedEclArray(simple_unformatted_buffer)
-    assert ecl_arr.read_length() == 1
+def test_unformatted_array_simple_length_loads(simple_unformatted_buffer):
+    arr = uwrite.UnformattedResArray(simple_unformatted_buffer)
+    assert arr.read_length() == 1
 
 
-def test_unformatted_ecl_array_big_read():
+def test_unformatted_array_big_read():
     buf = io.BytesIO(
         b"\x00\x00\x00\x10KEYWORD1"
         + (2300).to_bytes(4, byteorder="big")
@@ -56,82 +55,82 @@ def test_unformatted_ecl_array_big_read():
             + (4 * 300).to_bytes(4, byteorder="big")
         )
     )
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
-    assert not ecl_arr.is_eof
-    assert ecl_arr.read_keyword() == "KEYWORD1"
-    assert ecl_arr.read_type() == b"INTE"
-    assert ecl_arr.read_length() == 2300
-    assert np.array_equal(ecl_arr.read_array(), np.ones(shape=(2300,), dtype=">i4"))
+    arr = uwrite.UnformattedResArray(buf)
+    assert not arr.is_eof
+    assert arr.read_keyword() == "KEYWORD1"
+    assert arr.read_type() == b"INTE"
+    assert arr.read_length() == 2300
+    assert np.array_equal(arr.read_array(), np.ones(shape=(2300,), dtype=">i4"))
 
 
-def test_unformatted_ecl_array_bad_record_marker():
+def test_unformatted_array_bad_record_marker():
     buf = io.BytesIO(
         b"\x00\x00\x00\x10KEYWORD1"
         + (2300).to_bytes(4, byteorder="big")
         + b"INTE\x00\x00\x00\x10"
         + b"\x00" * (4 * 2300 + 4 * 6)
     )
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
-    with pytest.raises(ecl_io_uf.EclParsingError, match="size of record"):
-        ecl_arr.read_array()
+    arr = uwrite.UnformattedResArray(buf)
+    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+        arr.read_array()
 
 
-def test_unformatted_ecl_array_read_record_marker():
+def test_unformatted_array_read_record_marker():
     buf = io.BytesIO(b"\x00\x00\x00\x00")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
+    arr = uwrite.UnformattedResArray(buf)
 
-    ecl_arr._read_record_marker(0)
+    arr._read_record_marker(0)
     assert not buf.read(1)
     buf.seek(0)
 
-    with pytest.raises(ecl_io_uf.EclParsingError, match="size of record"):
-        ecl_arr._read_record_marker(1)
+    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+        arr._read_record_marker(1)
 
 
-def test_unformatted_ecl_array_bad_initial_marker():
+def test_unformatted_array_bad_initial_marker():
     buf = io.BytesIO(b"\x00\x00\x00\x01KEYWORD1")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
+    arr = uwrite.UnformattedResArray(buf)
 
-    with pytest.raises(ecl_io_uf.EclParsingError, match="size of record"):
-        ecl_arr.read_keyword()
+    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+        arr.read_keyword()
 
 
-def test_unformatted_ecl_array_bad_middle_marker():
+def test_unformatted_array_bad_middle_marker():
     buf = io.BytesIO(b"\x00\x00\x00\x10KEYWORD1\x00\x00\x00\x00INTE\x00\x00\x00\x01")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
+    arr = uwrite.UnformattedResArray(buf)
 
-    with pytest.raises(ecl_io_uf.EclParsingError, match="size of record"):
-        ecl_arr.read_keyword()
+    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+        arr.read_keyword()
 
 
-def test_unformatted_ecl_array_eof_during_keyword():
+def test_unformatted_array_eof_during_keyword():
     buf = io.BytesIO(b"\x00\x00\x00\x10A")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
+    arr = uwrite.UnformattedResArray(buf)
 
     with pytest.raises(
-        ecl_io_uf.EclParsingError, match="end-of-file while reading keyword"
+        uwrite.ResfoParsingError, match="end-of-file while reading keyword"
     ):
-        ecl_arr.read_keyword()
+        arr.read_keyword()
 
 
-def test_unformatted_ecl_array_eof_during_length():
+def test_unformatted_array_eof_during_length():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
+    arr = uwrite.UnformattedResArray(buf)
 
     with pytest.raises(
-        ecl_io_uf.EclParsingError, match="end-of-file while reading length"
+        uwrite.ResfoParsingError, match="end-of-file while reading length"
     ):
-        ecl_arr.read_keyword()
+        arr.read_keyword()
 
 
-def test_unformatted_ecl_array_eof_during_type():
+def test_unformatted_array_eof_during_type():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00\x00\x00\x00T")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
+    arr = uwrite.UnformattedResArray(buf)
 
     with pytest.raises(
-        ecl_io_uf.EclParsingError, match="end-of-file while reading type"
+        uwrite.ResfoParsingError, match="end-of-file while reading type"
     ):
-        ecl_arr.read_keyword()
+        arr.read_keyword()
 
 
 @pytest.mark.parametrize(
@@ -145,7 +144,7 @@ def test_unformatted_ecl_array_eof_during_type():
         (b"C011", 11, b"HELLO WORLD", b"HELLO WORLD"),
     ],
 )
-def test_unformatted_ecl_array_types(typestr, size, value, pyvalue):
+def test_unformatted_array_types(typestr, size, value, pyvalue):
     buf = io.BytesIO(
         b"\x00\x00\x00\x10AKEYWORD\x00\x00\x00\x01"
         + typestr
@@ -154,33 +153,33 @@ def test_unformatted_ecl_array_types(typestr, size, value, pyvalue):
         + value
         + size.to_bytes(4, signed=True, byteorder="big")
     )
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
+    arr = uwrite.UnformattedResArray(buf)
 
-    assert ecl_arr.read_keyword() == "AKEYWORD"
-    assert np.array_equal(ecl_arr.read_array(), np.array([pyvalue]))
+    assert arr.read_keyword() == "AKEYWORD"
+    assert np.array_equal(arr.read_array(), np.array([pyvalue]))
 
 
-def test_unformatted_ecl_array_non_type():
+def test_unformatted_array_non_type():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00\x00\x00\x01TYPE\x00\x00\x00\x10")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
+    arr = uwrite.UnformattedResArray(buf)
 
-    with pytest.raises(ecl_io_uf.EclParsingError, match="Unexpected item type"):
-        ecl_arr.read_keyword()
+    with pytest.raises(uwrite.ResfoParsingError, match="Unexpected item type"):
+        arr.read_keyword()
 
 
-def test_unformatted_ecl_array_bad_end_marker():
+def test_unformatted_array_bad_end_marker():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00\x00\x00\x01INTE\x00\x00\x10\x10")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
+    arr = uwrite.UnformattedResArray(buf)
 
-    with pytest.raises(ecl_io_uf.EclParsingError, match="size of record"):
-        ecl_arr.read_keyword()
+    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+        arr.read_keyword()
 
 
-def test_unformatted_ecl_array_zero_len():
+def test_unformatted_array_zero_len():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00\x00\x00\x00INTE\x00\x00\x00\x10")
-    ecl_arr = ecl_io_uf.UnformattedEclArray(buf)
-    assert ecl_arr.read_keyword() == "AKEYWORD"
-    assert len(ecl_arr.read_array()) == 0
+    arr = uwrite.UnformattedResArray(buf)
+    assert arr.read_keyword() == "AKEYWORD"
+    assert len(arr.read_array()) == 0
 
 
 def test_unformatted_simple_unformatted_parse():
@@ -191,16 +190,16 @@ def test_unformatted_simple_unformatted_parse():
         )
         * 10
     )
-    for ecl_arr in ecl_io_uf.UnformattedEclArray.parse(buf):
-        assert not ecl_arr.is_eof
-        assert ecl_arr.read_keyword() == "KEYWORD1"
-        assert ecl_arr.read_type() == b"INTE"
-        assert ecl_arr.read_length() == 1
-        assert np.array_equal(ecl_arr.read_array(), np.zeros(shape=(1,), dtype=">i4"))
+    for arr in uwrite.UnformattedResArray.parse(buf):
+        assert not arr.is_eof
+        assert arr.read_keyword() == "KEYWORD1"
+        assert arr.read_type() == b"INTE"
+        assert arr.read_length() == 1
+        assert np.array_equal(arr.read_array(), np.zeros(shape=(1,), dtype=">i4"))
 
     buf.seek(0)
 
-    assert len(list(ecl_io_uf.UnformattedEclArray.parse(buf))) == 10
+    assert len(list(uwrite.UnformattedResArray.parse(buf))) == 10
 
 
 def test_unformatted_x231_parse():
@@ -224,15 +223,15 @@ def test_unformatted_x231_parse():
             + (16).to_bytes(4, byteorder="big", signed=True)
         )
     )
-    for ecl_arr in ecl_io_uf.UnformattedEclArray.parse(buf):
-        assert not ecl_arr.is_eof
-        assert ecl_arr.read_keyword() == "KEYWORD1"
-        assert ecl_arr.read_type() == b"INTE"
-        assert ecl_arr.read_length() == 5000000000
+    for arr in uwrite.UnformattedResArray.parse(buf):
+        assert not arr.is_eof
+        assert arr.read_keyword() == "KEYWORD1"
+        assert arr.read_type() == b"INTE"
+        assert arr.read_length() == 5000000000
 
     buf.seek(0)
 
-    assert len(list(ecl_io_uf.UnformattedEclArray.parse(buf))) == 1
+    assert len(list(uwrite.UnformattedResArray.parse(buf))) == 1
 
 
 def test_unformatted_x231_wrong_kw():
@@ -250,8 +249,8 @@ def test_unformatted_x231_wrong_kw():
             + (16).to_bytes(4, byteorder="big", signed=True)
         )
     )
-    with pytest.raises(ecl_io_uf.EclParsingError, match="x231 type record"):
-        list(ecl_io_uf.UnformattedEclArray.parse(buf))
+    with pytest.raises(uwrite.ResfoParsingError, match="x231 type record"):
+        list(uwrite.UnformattedResArray.parse(buf))
 
 
 def test_unformatted_parse_mess():
@@ -265,12 +264,12 @@ def test_unformatted_parse_mess():
         )
     )
 
-    for ecl_arr in ecl_io_uf.UnformattedEclArray.parse(buf):
-        assert not ecl_arr.is_eof
-        assert ecl_arr.read_keyword() == "KEYWORD1"
-        assert ecl_arr.read_type() == b"MESS"
-        assert ecl_arr.read_length() == 0
+    for arr in uwrite.UnformattedResArray.parse(buf):
+        assert not arr.is_eof
+        assert arr.read_keyword() == "KEYWORD1"
+        assert arr.read_type() == b"MESS"
+        assert arr.read_length() == 0
 
     buf.seek(0)
 
-    assert len(list(ecl_io_uf.UnformattedEclArray.parse(buf))) == 1
+    assert len(list(uwrite.UnformattedResArray.parse(buf))) == 1

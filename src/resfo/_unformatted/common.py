@@ -9,7 +9,7 @@ def group_len(type_keyword):
 
 
 # The number of bytes for each
-# ecl type except C0nn which varies
+# res type except C0nn which varies
 static_item_sizes = {
     b"INTE": 4,
     b"REAL": 4,
@@ -24,7 +24,7 @@ static_item_sizes = {
 def item_size(type_keyword):
     """
     :returns: The number of bytes for each element in an
-        ecl array of the given ecl type.
+        res array of the given res type.
     """
     if type_keyword[0:2] == b"C0":
         return int(type_keyword[2:4].decode("ascii"))

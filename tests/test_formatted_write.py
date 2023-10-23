@@ -1,20 +1,20 @@
 import io
 
-from ecl_data_io.types import MESS
-import ecl_data_io._formatted.write as ecl_io_fwrite
 import numpy as np
+import resfo._formatted.write as fwrite
+from resfo.types import MESS
 
 
 def test_write_str_list():
     buf = io.StringIO()
-    ecl_io_fwrite.write_str_list(buf, ["a", "bb"])
+    fwrite.write_str_list(buf, ["a", "bb"])
 
     assert buf.getvalue() == "\n 'a ' 'bb'"
 
 
 def test_write_str():
     buf = io.StringIO()
-    ecl_io_fwrite.formatted_write(buf, [("ZGRP    ", ["12345678"] * 8)])
+    fwrite.formatted_write(buf, [("ZGRP    ", ["12345678"] * 8)])
 
     assert (
         buf.getvalue()
@@ -26,9 +26,7 @@ def test_write_str():
 
 def test_write_int():
     buf = io.StringIO()
-    ecl_io_fwrite.formatted_write(
-        buf, [("FILEHEAD", np.zeros(shape=(7,), dtype=np.int32))]
-    )
+    fwrite.formatted_write(buf, [("FILEHEAD", np.zeros(shape=(7,), dtype=np.int32))])
 
     assert (
         buf.getvalue()
@@ -40,9 +38,7 @@ def test_write_int():
 
 def test_write_logi():
     buf = io.StringIO()
-    ecl_io_fwrite.formatted_write(
-        buf, [("LOGIHEAD", np.zeros(shape=(26,), dtype=np.bool_))]
-    )
+    fwrite.formatted_write(buf, [("LOGIHEAD", np.zeros(shape=(26,), dtype=np.bool_))])
 
     assert (
         buf.getvalue()
@@ -54,9 +50,7 @@ def test_write_logi():
 
 def test_write_real():
     buf = io.StringIO()
-    ecl_io_fwrite.formatted_write(
-        buf, [("REALHEAD", np.zeros(shape=(4,), dtype=np.float32))]
-    )
+    fwrite.formatted_write(buf, [("REALHEAD", np.zeros(shape=(4,), dtype=np.float32))])
 
     assert (
         buf.getvalue()
@@ -67,9 +61,7 @@ def test_write_real():
 
 def test_write_doub():
     buf = io.StringIO()
-    ecl_io_fwrite.formatted_write(
-        buf, [("DOUBHEAD", np.zeros(shape=(4,), dtype=np.float64))]
-    )
+    fwrite.formatted_write(buf, [("DOUBHEAD", np.zeros(shape=(4,), dtype=np.float64))])
 
     assert (
         buf.getvalue()
@@ -81,5 +73,5 @@ def test_write_doub():
 
 def test_write_mess():
     buf = io.StringIO()
-    ecl_io_fwrite.formatted_write(buf, [("MESSHEAD", MESS)])
+    fwrite.formatted_write(buf, [("MESSHEAD", MESS)])
     assert buf.getvalue() == """ 'MESSHEAD'           0 'MESS'\n"""

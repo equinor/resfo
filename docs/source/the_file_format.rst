@@ -32,7 +32,7 @@ the type one of the following 4 character strings:
 Formatted
 ---------
 
-The formatted ecl file format is very similar to the the unformatted
+The formatted res file format is very similar to the the unformatted
 files, except ascii. The layout is as follows
 
 * keyword
@@ -72,7 +72,7 @@ formatting specifiers, based on type:
 Unformatted
 -----------
 
-The unformatted ecl file format is a binary format based on the fortran fwrite.
+The unformatted res file format is a binary format based on the fortran fwrite.
 
 All numerical values are big-endian.
 

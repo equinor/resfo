@@ -3,8 +3,8 @@ requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ecl-data-io"
-description="A (lazy) parser and writer for the ecl output format."
+name = "resfo"
+description="A (lazy) parser and writer for reservoir simulator fortran output format."
 readme = "README.md"
 classifiers=[
     "Development Status :: 1 - Planning",
@@ -29,10 +29,10 @@ maintainers = [
 text = "LGPL-3.0"
 
 [project.urls]
-"Homepage" = "https://github.com/equinor/ecl-data-io"
-"Repository" = "https://github.com/equinor/ecl-data-io"
-"Documentation" = "https://ecl-data-io.readthedocs.io/en/stable/"
-"Bug Tracker" = "https://github.com/equinor/ecl-data-io/issues"
+"Homepage" = "https://github.com/equinor/resfo"
+"Repository" = "https://github.com/equinor/resfo"
+"Documentation" = "https://resfo.readthedocs.io/en/stable/"
+"Bug Tracker" = "https://github.com/equinor/resfo/issues"
 
 [project.optional-dependencies]
 doc = [

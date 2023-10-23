@@ -1,6 +1,6 @@
 import hypothesis.strategies as st
 import pytest
-from ecl_data_io._unformatted.common import bytes_in_array, group_len, item_size
+from resfo._unformatted.common import bytes_in_array, group_len, item_size
 from hypothesis import given
 
 

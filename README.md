@@ -1,33 +1,35 @@
-ecl-data-io
+resfo
 ===========
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![docs](https://readthedocs.org/projects/ecl-data-io/badge/?version=latest&style=plastic)](https://ecl-data-io.readthedocs.io/)
+[![docs](https://readthedocs.org/projects/resfo/badge/?version=latest&style=plastic)](https://resfo.readthedocs.io/)
 
-Parser for the ecl output format, such as found in files with
-extensions .UNRST, .EGRID, .INIT, etc. and also the corresponding
-ascii files with extension .FUNRST, .FEGRID, .FINIT, etc.
+resfo (Reservoir simulator fortran output) is a parser for the output format
+used by several reservoir simulators such as [opm
+flow](https://github.com/OPM/opm-simulators), such as found in files with
+extensions .UNRST, .EGRID, .INIT, etc. and also the corresponding ascii files
+with extension .FUNRST, .FEGRID, .FINIT, etc.
 
 
 Installation
 ============
 
-ecl-data-io can be installed with pip:
+resfo can be installed with pip:
 
 ```bash
-pip install ecl-data-io
+pip install resfo
 ```
 
 Getting started
 ===============
 
-Ecl output files consist of a sequence of named arrays. ecl-data-io does not
-interpret the names, but simply give you a tuple of the name and a numpy array
-with the read function:
+Reservoir simulator output files consist of a sequence of named arrays. resfo
+does not interpret the names, but simply give you a tuple of the name and a
+numpy array with the read function:
 
 ```
-import ecl_data_io as eclio
+import resfo
 
-for kw, arr in eclio.read("my_grid.egrid"):
+for kw, arr in resfo.read("my_grid.egrid"):
     print(kw)
 
 >>> "FILEHEAD"
@@ -38,4 +40,4 @@ for kw, arr in eclio.read("my_grid.egrid"):
 >>> "MAPAXES"
 ```
 
-For more information, see [the docs](http://ecl-data-io.rtfd.io).
+For more information, see [the docs](http://resfo.rtfd.io).
