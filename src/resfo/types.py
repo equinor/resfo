@@ -23,10 +23,12 @@ that results in a warning.
 
 """
 import warnings
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
-from numpy.typing import ArrayLike
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
 
 # np dtype for res types with fixed width
 static_dtypes = {
@@ -48,7 +50,7 @@ class MESS:
 
 
 ReadArrayValue = Union[np.ndarray, MESS]
-WriteArrayValue = Union[ArrayLike, MESS]
+WriteArrayValue = Union["ArrayLike", MESS]
 
 
 def to_np_type(type_keyword):
