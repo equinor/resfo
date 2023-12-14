@@ -1,3 +1,6 @@
+from functools import lru_cache
+
+
 def group_len(type_keyword):
     """
     The length of element groups in unformatted arrays.
@@ -21,6 +24,7 @@ static_item_sizes = {
 }
 
 
+@lru_cache
 def item_size(type_keyword):
     """
     :returns: The number of bytes for each element in an
@@ -28,9 +32,10 @@ def item_size(type_keyword):
     """
     if type_keyword[0:2] == b"C0":
         return int(type_keyword[2:4].decode("ascii"))
-    return static_item_sizes.get(type_keyword, None)
+    return static_item_sizes.get(type_keyword)
 
 
+@lru_cache
 def bytes_in_array(array_length, item_type):
     """
     :param array_length: Number of items in the array
