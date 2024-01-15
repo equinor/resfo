@@ -41,3 +41,21 @@ for kw, arr in resfo.read("my_grid.egrid"):
 ```
 
 For more information, see [the docs](http://resfo.rtfd.io).
+
+
+How to contribute
+=================
+
+The easiest way to set up a nice development environment for resfo is to use tox (can be installed via `pip install tox` or
+`sudo apt install tox` on ubuntu), then all testing and linting can be ran with
+
+```bash
+tox
+```
+
+You can also set up `pre-commit` to ensure style checks are done as you commit:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
