@@ -1,7 +1,8 @@
 import hypothesis.strategies as st
 import numpy as np
-import resfo
 from hypothesis.extra.numpy import arrays
+
+import resfo
 
 formats = st.sampled_from(resfo.Format)
 in_formats = st.one_of(formats, st.just(None))

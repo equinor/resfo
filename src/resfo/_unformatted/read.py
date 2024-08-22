@@ -1,6 +1,7 @@
 import io
 
 import numpy as np
+
 import resfo.types as res_types
 from resfo._unformatted.common import bytes_in_array, group_len, item_size
 from resfo._unformatted.write import write_array_like
@@ -51,10 +52,7 @@ class UnformattedResArray(ResArray):
             keyword = self.read_keyword()
 
         if array is not res_types.MESS:
-            if array is not None:
-                array = np.asarray(array)
-            else:
-                array = self.read_array()
+            array = np.asarray(array) if array is not None else self.read_array()
             if array is not res_types.MESS and self.read_length() != array.size:
                 raise ValueError("Cannot update array with different size")
 

@@ -1,4 +1,5 @@
 import numpy as np
+
 import resfo.types as res_types
 from resfo.errors import ResfoWriteError
 

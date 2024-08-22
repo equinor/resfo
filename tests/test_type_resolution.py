@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 import resfo
 
 
@@ -19,7 +20,7 @@ def test_formatted_read_type_resolution(tmp_path, contents, expected_type):
         f.write(contents)
 
     with (tmp_path / "test.txt").open("r") as f:
-        ((specgrid, arr),) = resfo.read(f)
+        ((_specgrid, arr),) = resfo.read(f)
 
     assert arr.dtype == expected_type
 
@@ -77,9 +78,9 @@ def keyword_start(res_type):
         ),
         (
             keyword_start(b"C010")
-            + b"\x00\x00\x00\x0A"
+            + b"\x00\x00\x00\x0a"
             + b"SPECGRID10"
-            + b"\x00\x00\x00\x0A",
+            + b"\x00\x00\x00\x0a",
             np.dtype("|S10"),
         ),
         (
@@ -94,7 +95,7 @@ def test_unformatted_read_type_resolution(tmp_path, contents, expected_type):
         f.write(contents)
 
     with (tmp_path / "test.txt").open("rb") as f:
-        ((specgrid, arr),) = resfo.read(f)
+        ((_specgrid, arr),) = resfo.read(f)
 
     assert arr.dtype == expected_type
 

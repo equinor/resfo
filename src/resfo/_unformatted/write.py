@@ -1,6 +1,7 @@
 import warnings
 
 import numpy as np
+
 import resfo.types as res_types
 from resfo._unformatted.common import group_len, item_size
 from resfo.errors import ResfoWriteError
@@ -35,7 +36,7 @@ def cast_array_to_res(arr):
     else:
         raise ValueError(f"Cannot cast {arr.dtype} to a res type")
 
-    warnings.warn(f"casting array dtype {arr.dtype} to {result_dtype}")
+    warnings.warn(f"casting array dtype {arr.dtype} to {result_dtype}", stacklevel=1)
     return arr.astype(result_dtype)
 
 

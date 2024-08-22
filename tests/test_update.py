@@ -7,7 +7,7 @@ from hypothesis import HealthCheck, given, settings
 
 from resfo import MESS, lazy_read, read, write
 
-from .generators import resfo_datas, float_arrays, keywords
+from .generators import float_arrays, keywords, resfo_datas
 
 
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
