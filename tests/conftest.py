@@ -1,6 +1,5 @@
 from hypothesis import HealthCheck, settings
 
-
 settings.register_profile(
     "no_timeouts",
     deadline=None,

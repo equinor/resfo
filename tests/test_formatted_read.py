@@ -1,6 +1,7 @@
 import io
 
 import numpy as np
+
 import resfo._formatted.read as fread
 
 

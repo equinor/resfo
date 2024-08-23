@@ -1,6 +1,7 @@
 from io import BytesIO, StringIO
 
 import pytest
+
 from resfo import Format, ResfoParsingError, ResfoWriteError, read, write
 
 

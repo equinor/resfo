@@ -22,6 +22,7 @@ and back. Some numpy dtypes will give a loss of precision and
 that results in a warning.
 
 """
+
 import warnings
 from typing import TYPE_CHECKING, Union
 
@@ -61,7 +62,7 @@ def to_np_type(type_keyword):
     """
     if type_keyword[0:2] == b"C0":
         return np.dtype("|S" + type_keyword[2:4].decode("ascii"))
-    return static_dtypes.get(type_keyword, None)
+    return static_dtypes.get(type_keyword)
 
 
 def from_np_dtype(array):
@@ -78,7 +79,7 @@ def from_np_dtype(array):
     if dtype in [np.dtype(np.int32), np.dtype(np.int32).newbyteorder(">")]:
         return b"INTE"
     if dtype in [np.dtype(np.int64), np.dtype(np.int64).newbyteorder(">")]:
-        warnings.warn("downcasting numpy int64 to int32 for res file.")
+        warnings.warn("downcasting numpy int64 to int32 for res file.", stacklevel=1)
         return b"INTE"
     if dtype in [np.dtype(np.float32), np.dtype(np.float32).newbyteorder(">")]:
         return b"REAL"
@@ -112,7 +113,7 @@ def is_valid_type(type_str):
     """
     :returns: Whether the given byte string is a valid res type.
     """
-    if type_str in static_dtypes.keys():
+    if type_str in static_dtypes:
         return True
     if type_str in [b"X231", b"MESS"]:
         return True

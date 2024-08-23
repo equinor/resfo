@@ -51,9 +51,9 @@ def get_stream(filepath, fileformat: Format, mode: str = "r"):
     """
     if isinstance(filepath, (str, Path)):
         if fileformat == Format.FORMATTED:
-            return open(filepath, mode + "t"), True
+            return open(filepath, mode + "t"), True  # noqa: SIM115
         else:
-            return open(filepath, mode + "b"), True
+            return open(filepath, mode + "b"), True  # noqa: SIM115
     else:
         return filepath, False
 

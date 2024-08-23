@@ -1,6 +1,7 @@
 import numpy as np
 from hypothesis import HealthCheck, given, settings
 from numpy.testing import assert_allclose
+
 from resfo import MESS, read, write
 
 from .generators import formats, resfo_datas
