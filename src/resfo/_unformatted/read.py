@@ -72,7 +72,8 @@ class UnformattedResArray(ResArray):
         value = int.from_bytes(self.stream.read(4), byteorder="big", signed=True)
         if value != expected_value:
             raise ResfoParsingError(
-                f"Unexpected size of record {value} ({value.to_bytes(4, byteorder='big', signed=True)})"
+                f"Unexpected size of record {value} ({value.to_bytes(4, byteorder='big', signed=True)}) "
+                f"expected {expected_value}"
             )
 
     def _read_keyword(self):
