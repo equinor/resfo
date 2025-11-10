@@ -3,7 +3,7 @@ resfo
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![docs](https://readthedocs.org/projects/resfo/badge/?version=latest&style=plastic)](https://resfo.readthedocs.io/)
 
-resfo (Reservoir simulator fortran output) is a parser for the output format
+resfo (REservoir Simulator Fortran Output) is a parser for the output format
 used by several reservoir simulators such as [opm
 flow](https://github.com/OPM/opm-simulators), such as found in files with
 extensions .UNRST, .EGRID, .INIT, etc. and also the corresponding ascii files
