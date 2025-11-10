@@ -1,4 +1,5 @@
-from typing import IO, Any, Iterator, List, Optional, Tuple
+from os import PathLike
+from typing import IO, Any, Iterator, List, Optional, Tuple, Union
 
 from resfo._formatted.read import FormattedArray
 from resfo._unformatted.read import UnformattedResArray
@@ -9,7 +10,7 @@ from .types import ArrayValue
 
 
 def read(
-    filelike: IO[Any], fileformat: Optional[Format] = None
+    filelike: Union[str, PathLike[str], IO[Any]], fileformat: Optional[Format] = None
 ) -> List[Tuple[str, ArrayValue]]:
     """
     Read the contents of a res file and return a list of
@@ -23,7 +24,7 @@ def read(
 
 
 def lazy_read(
-    filelike: IO[Any], fileformat: Optional[Format] = None
+    filelike: Union[str, PathLike[str], IO[Any]], fileformat: Optional[Format] = None
 ) -> Iterator[ResArray]:
     """
     Reads the contents of an res file and generates the entries
