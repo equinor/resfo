@@ -42,9 +42,12 @@ class UnformattedResArray(ResArray):
             to_read -= read_now
             bytes_to_read = type_len * read_now
             self._read_record_marker(bytes_to_read)
-            group_array = np.frombuffer(
-                self.stream.read(bytes_to_read), dtype=np_type, count=read_now
-            )
+            try:
+                group_array = np.frombuffer(
+                    self.stream.read(bytes_to_read), dtype=np_type, count=read_now
+                )
+            except ValueError as error:
+                raise ResfoParsingError(f"Could not read array: {error}") from error
             array[have_read : have_read + read_now] = group_array
             have_read += read_now
             self._read_record_marker(bytes_to_read)

@@ -3,12 +3,13 @@ import io
 import numpy as np
 import pytest
 
-import resfo._unformatted.read as uwrite
+import resfo
+import resfo._unformatted.read as uread
 
 
 def test_unformatted_array_eof():
     buf = io.BytesIO(b"")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
     assert arr.is_eof
 
 
@@ -21,7 +22,7 @@ def simple_unformatted_buffer():
 
 
 def test_unformatted_array_simple_read(simple_unformatted_buffer):
-    arr = uwrite.UnformattedResArray(simple_unformatted_buffer)
+    arr = uread.UnformattedResArray(simple_unformatted_buffer)
     assert not arr.is_eof
     assert arr.read_keyword() == "KEYWORD1"
     assert arr.read_type() == b"INTE"
@@ -30,12 +31,12 @@ def test_unformatted_array_simple_read(simple_unformatted_buffer):
 
 
 def test_unformatted_array_simple_type_loads(simple_unformatted_buffer):
-    arr = uwrite.UnformattedResArray(simple_unformatted_buffer)
+    arr = uread.UnformattedResArray(simple_unformatted_buffer)
     assert arr.read_type() == b"INTE"
 
 
 def test_unformatted_array_simple_length_loads(simple_unformatted_buffer):
-    arr = uwrite.UnformattedResArray(simple_unformatted_buffer)
+    arr = uread.UnformattedResArray(simple_unformatted_buffer)
     assert arr.read_length() == 1
 
 
@@ -56,7 +57,7 @@ def test_unformatted_array_big_read():
             + (4 * 300).to_bytes(4, byteorder="big")
         )
     )
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
     assert not arr.is_eof
     assert arr.read_keyword() == "KEYWORD1"
     assert arr.read_type() == b"INTE"
@@ -71,66 +72,64 @@ def test_unformatted_array_bad_record_marker():
         + b"INTE\x00\x00\x00\x10"
         + b"\x00" * (4 * 2300 + 4 * 6)
     )
-    arr = uwrite.UnformattedResArray(buf)
-    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+    arr = uread.UnformattedResArray(buf)
+    with pytest.raises(uread.ResfoParsingError, match="size of record"):
         arr.read_array()
 
 
 def test_unformatted_array_read_record_marker():
     buf = io.BytesIO(b"\x00\x00\x00\x00")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
 
     arr._read_record_marker(0)
     assert not buf.read(1)
     buf.seek(0)
 
-    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+    with pytest.raises(uread.ResfoParsingError, match="size of record"):
         arr._read_record_marker(1)
 
 
 def test_unformatted_array_bad_initial_marker():
     buf = io.BytesIO(b"\x00\x00\x00\x01KEYWORD1")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
 
-    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+    with pytest.raises(uread.ResfoParsingError, match="size of record"):
         arr.read_keyword()
 
 
 def test_unformatted_array_bad_middle_marker():
     buf = io.BytesIO(b"\x00\x00\x00\x10KEYWORD1\x00\x00\x00\x00INTE\x00\x00\x00\x01")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
 
-    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+    with pytest.raises(uread.ResfoParsingError, match="size of record"):
         arr.read_keyword()
 
 
 def test_unformatted_array_eof_during_keyword():
     buf = io.BytesIO(b"\x00\x00\x00\x10A")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
 
     with pytest.raises(
-        uwrite.ResfoParsingError, match="end-of-file while reading keyword"
+        uread.ResfoParsingError, match="end-of-file while reading keyword"
     ):
         arr.read_keyword()
 
 
 def test_unformatted_array_eof_during_length():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
 
     with pytest.raises(
-        uwrite.ResfoParsingError, match="end-of-file while reading length"
+        uread.ResfoParsingError, match="end-of-file while reading length"
     ):
         arr.read_keyword()
 
 
 def test_unformatted_array_eof_during_type():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00\x00\x00\x00T")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
 
-    with pytest.raises(
-        uwrite.ResfoParsingError, match="end-of-file while reading type"
-    ):
+    with pytest.raises(uread.ResfoParsingError, match="end-of-file while reading type"):
         arr.read_keyword()
 
 
@@ -154,7 +153,7 @@ def test_unformatted_array_types(typestr, size, value, pyvalue):
         + value
         + size.to_bytes(4, signed=True, byteorder="big")
     )
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
 
     assert arr.read_keyword() == "AKEYWORD"
     assert np.array_equal(arr.read_array(), np.array([pyvalue]))
@@ -162,23 +161,23 @@ def test_unformatted_array_types(typestr, size, value, pyvalue):
 
 def test_unformatted_array_non_type():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00\x00\x00\x01TYPE\x00\x00\x00\x10")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
 
-    with pytest.raises(uwrite.ResfoParsingError, match="Unexpected item type"):
+    with pytest.raises(uread.ResfoParsingError, match="Unexpected item type"):
         arr.read_keyword()
 
 
 def test_unformatted_array_bad_end_marker():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00\x00\x00\x01INTE\x00\x00\x10\x10")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
 
-    with pytest.raises(uwrite.ResfoParsingError, match="size of record"):
+    with pytest.raises(uread.ResfoParsingError, match="size of record"):
         arr.read_keyword()
 
 
 def test_unformatted_array_zero_len():
     buf = io.BytesIO(b"\x00\x00\x00\x10AKEYWORD\x00\x00\x00\x00INTE\x00\x00\x00\x10")
-    arr = uwrite.UnformattedResArray(buf)
+    arr = uread.UnformattedResArray(buf)
     assert arr.read_keyword() == "AKEYWORD"
     assert len(arr.read_array()) == 0
 
@@ -191,7 +190,7 @@ def test_unformatted_simple_unformatted_parse():
         )
         * 10
     )
-    for arr in uwrite.UnformattedResArray.parse(buf):
+    for arr in uread.UnformattedResArray.parse(buf):
         assert not arr.is_eof
         assert arr.read_keyword() == "KEYWORD1"
         assert arr.read_type() == b"INTE"
@@ -200,7 +199,7 @@ def test_unformatted_simple_unformatted_parse():
 
     buf.seek(0)
 
-    assert len(list(uwrite.UnformattedResArray.parse(buf))) == 10
+    assert len(list(uread.UnformattedResArray.parse(buf))) == 10
 
 
 def test_unformatted_x231_parse():
@@ -224,7 +223,7 @@ def test_unformatted_x231_parse():
             + (16).to_bytes(4, byteorder="big", signed=True)
         )
     )
-    for arr in uwrite.UnformattedResArray.parse(buf):
+    for arr in uread.UnformattedResArray.parse(buf):
         assert not arr.is_eof
         assert arr.read_keyword() == "KEYWORD1"
         assert arr.read_type() == b"INTE"
@@ -232,7 +231,7 @@ def test_unformatted_x231_parse():
 
     buf.seek(0)
 
-    assert len(list(uwrite.UnformattedResArray.parse(buf))) == 1
+    assert len(list(uread.UnformattedResArray.parse(buf))) == 1
 
 
 def test_unformatted_x231_wrong_kw():
@@ -250,8 +249,8 @@ def test_unformatted_x231_wrong_kw():
             + (16).to_bytes(4, byteorder="big", signed=True)
         )
     )
-    with pytest.raises(uwrite.ResfoParsingError, match="x231 type record"):
-        list(uwrite.UnformattedResArray.parse(buf))
+    with pytest.raises(uread.ResfoParsingError, match="x231 type record"):
+        list(uread.UnformattedResArray.parse(buf))
 
 
 def test_unformatted_parse_mess():
@@ -265,7 +264,7 @@ def test_unformatted_parse_mess():
         )
     )
 
-    for arr in uwrite.UnformattedResArray.parse(buf):
+    for arr in uread.UnformattedResArray.parse(buf):
         assert not arr.is_eof
         assert arr.read_keyword() == "KEYWORD1"
         assert arr.read_type() == b"MESS"
@@ -273,4 +272,13 @@ def test_unformatted_parse_mess():
 
     buf.seek(0)
 
-    assert len(list(uwrite.UnformattedResArray.parse(buf))) == 1
+    assert len(list(uread.UnformattedResArray.parse(buf))) == 1
+
+
+def test_truncated_file_raises_parse_error():
+    buf = io.BytesIO()
+    resfo.write(buf, [("KEYWORD1", np.ones(100))])
+    buf.seek(0)
+    buf.truncate(100)
+    with pytest.raises(resfo.ResfoParsingError, match="Could not read array"):
+        _ = resfo.read(buf)
