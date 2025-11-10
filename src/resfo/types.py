@@ -31,7 +31,7 @@ import numpy.typing as npt
 from typing_extensions import TypeAlias
 
 # np dtype for res types with fixed width
-static_dtypes = {
+static_dtypes: dict[bytes, np.dtype[Any]] = {
     b"INTE": np.dtype(np.int32).newbyteorder(">"),
     b"REAL": np.dtype(np.float32).newbyteorder(">"),
     b"LOGI": np.dtype(np.int32).newbyteorder(">"),
@@ -55,7 +55,7 @@ MESS = MessType()
 ArrayValue: TypeAlias = Union[npt.NDArray[Any], MessType]
 
 
-def to_np_type(type_keyword: bytes) -> np.dtype:
+def to_np_type(type_keyword: bytes) -> Union[np.dtype[Any], None]:
     """
     :param type_keyword: A bytestring of a res type.
     :returns: A np dtype corresponding to the given

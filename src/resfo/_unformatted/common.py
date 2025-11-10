@@ -1,7 +1,8 @@
 from functools import lru_cache
+from typing import Union
 
 
-def group_len(type_keyword):
+def group_len(type_keyword: bytes) -> int:
     """
     The length of element groups in unformatted arrays.
     """
@@ -25,7 +26,7 @@ static_item_sizes = {
 
 
 @lru_cache
-def item_size(type_keyword):
+def item_size(type_keyword: bytes) -> Union[int, None]:
     """
     :returns: The number of bytes for each element in an
         res array of the given res type.
@@ -36,7 +37,7 @@ def item_size(type_keyword):
 
 
 @lru_cache
-def bytes_in_array(array_length, item_type):
+def bytes_in_array(array_length: int, item_type: bytes) -> Union[int, None]:
     """
     :param array_length: Number of items in the array
     :param item_type: Type of items in the array
@@ -46,7 +47,11 @@ def bytes_in_array(array_length, item_type):
     g_len = group_len(item_type)
     full_groups = array_length // g_len
 
+    size = item_size(item_type)
+    if size is None:
+        return None
+
     if array_length % g_len:
-        return (full_groups + 1) * 8 + array_length * item_size(item_type)
+        return (full_groups + 1) * 8 + array_length * size
     else:
-        return full_groups * 8 + array_length * item_size(item_type)
+        return full_groups * 8 + array_length * size

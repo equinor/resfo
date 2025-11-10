@@ -1,6 +1,8 @@
 import io
+from typing import Optional
 
 import numpy as np
+from numpy.typing import ArrayLike
 
 import resfo.types as res_types
 from resfo._unformatted.common import bytes_in_array, group_len, item_size
@@ -14,7 +16,7 @@ class UnformattedResArray(ResArray):
     An array entry in a unformatted res file.
     """
 
-    def read_array(self):
+    def read_array(self) -> res_types.ArrayValue:
         """
         Read the array from the unformatted res file.
         :returns: numpy array of values.
@@ -23,12 +25,17 @@ class UnformattedResArray(ResArray):
             self._read()
         if self._type == b"MESS":
             return res_types.MESS
+        assert self._data_start is not None
+        assert self._type is not None
+        assert self._length is not None
         self.stream.seek(self._data_start)
         g_len = group_len(self._type)
         np_type = res_types.to_np_type(self._type)
         array = np.zeros(shape=(self._length,), dtype=np_type)
         to_read = self._length
         type_len = item_size(self._type)
+        if type_len is None:
+            raise ResfoParsingError(f"Unknown type {str(type_len)}")
         have_read = 0
         while to_read > 0:
             read_now = min(g_len, to_read)
@@ -47,24 +54,30 @@ class UnformattedResArray(ResArray):
 
         return array
 
-    def update(self, *, keyword=None, array=None):
+    def update(
+        self, *, keyword: Optional[str] = None, array: Optional[ArrayLike] = None
+    ) -> None:
         if keyword is None:
             keyword = self.read_keyword()
 
-        if array is not res_types.MESS:
-            array = np.asarray(array) if array is not None else self.read_array()
-            if array is not res_types.MESS and self.read_length() != array.size:
-                raise ValueError("Cannot update array with different size")
+        array_: res_types.ArrayValue = res_types.MESS
+        if not isinstance(array, res_types.MessType):
+            array_ = np.asarray(array) if array is not None else self.read_array()
+        if (
+            not isinstance(array_, res_types.MessType)
+            and self.read_length() != array_.size
+        ):
+            raise ValueError("Cannot update array with different size")
 
-        if self.read_type() != res_types.from_np_dtype(array):
+        if self.read_type() != res_types.from_np_dtype(array_):
             raise ValueError("Cannot update array with different type")
 
         self.stream.seek(self.start)
-        write_array_like(self.stream, keyword, array)
+        write_array_like(self.stream, keyword, array_)
         self._keyword = keyword
-        self._array = array
+        self._array = array_
 
-    def _read_record_marker(self, expected_value):
+    def _read_record_marker(self, expected_value: int) -> None:
         """
         Read 4 bytes and check that it matches the
         expected fortan header/footer
@@ -72,10 +85,10 @@ class UnformattedResArray(ResArray):
         value = int.from_bytes(self.stream.read(4), byteorder="big", signed=True)
         if value != expected_value:
             raise ResfoParsingError(
-                f"Unexpected size of record {value} ({value.to_bytes(4, byteorder='big', signed=True)})"
+                f"Unexpected size of record {value} ({str(value.to_bytes(4, byteorder='big', signed=True))})"
             )
 
-    def _read_keyword(self):
+    def _read_keyword(self) -> None:
         """
         With stream.peek() at the start of the keyword, reads
         it into self._keyword
@@ -84,7 +97,7 @@ class UnformattedResArray(ResArray):
         if not self._keyword or len(self._keyword) < 8:
             raise ResfoParsingError("Reached end-of-file while reading keyword")
 
-    def _read_type(self):
+    def _read_type(self) -> None:
         """
         With stream.peek() at the start of the type string, reads
         it into self._type
@@ -93,7 +106,7 @@ class UnformattedResArray(ResArray):
         if not self._type or len(self._type) < 4:
             raise ResfoParsingError("Reached end-of-file while reading type")
 
-    def _read_length(self):
+    def _read_length(self) -> int:
         """
         With stream.peek() at the start of the length, reads it and returns it.
         """
@@ -103,7 +116,7 @@ class UnformattedResArray(ResArray):
 
         return int.from_bytes(length_bytes, byteorder="big", signed=True)
 
-    def _read(self):
+    def _read(self) -> None:
         """
         See resfo.array_entry.ResArray._read()
         """
@@ -140,14 +153,16 @@ class UnformattedResArray(ResArray):
         if self._length == 0:
             type_len = 0
         if type_len is None:
-            raise ResfoParsingError(f"Unexpected item type {self._type}")
+            raise ResfoParsingError(f"Unexpected item type {str(self._type)}")
         if type_len <= 0 and self._length != 0:
             raise ResfoParsingError(
-                f"Found keyword of type {self._type} which"
+                f"Found keyword of type {str(self._type)} which"
                 f"has item length {type_len} which requires 0 number of"
                 f"elements, but found {self._length} amount of elements."
             )
         bytes_to_skip = bytes_in_array(self._length, self._type)
+        if bytes_to_skip is None:
+            raise ResfoParsingError(f"Unknown type {str(self._type)}")
 
         self._data_start = self.stream.tell()
         self.stream.seek(bytes_to_skip, io.SEEK_CUR)

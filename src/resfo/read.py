@@ -1,4 +1,4 @@
-from typing import Iterator, List, Optional, Tuple
+from typing import IO, Any, Iterator, List, Optional, Tuple
 
 from resfo._formatted.read import FormattedArray
 from resfo._unformatted.read import UnformattedResArray
@@ -8,18 +8,23 @@ from resfo.format import Format, check_correct_mode, get_stream, guess_format
 from .types import ArrayValue
 
 
-def read(*args, **kwargs) -> List[Tuple[str, ArrayValue]]:
+def read(
+    filelike: IO[Any], fileformat: Optional[Format] = None
+) -> List[Tuple[str, ArrayValue]]:
     """
     Read the contents of a res file and return a list of
     tuples (keyword, array). Takes the same parameters as
     lazy_read, but differs in return type
     """
     return [
-        (arr.read_keyword(), arr.read_array()) for arr in lazy_read(*args, **kwargs)
+        (arr.read_keyword(), arr.read_array())
+        for arr in lazy_read(filelike, fileformat)
     ]
 
 
-def lazy_read(filelike, fileformat: Optional[Format] = None) -> Iterator[ResArray]:
+def lazy_read(
+    filelike: IO[Any], fileformat: Optional[Format] = None
+) -> Iterator[ResArray]:
     """
     Reads the contents of an res file and generates the entries
     of that file. Each entry has a entry.read_keyword() and

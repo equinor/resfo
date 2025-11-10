@@ -1,17 +1,20 @@
-from typing import Dict, Sequence, Tuple, Union
+from os import PathLike
+from typing import IO, Any, Iterable, Tuple, Union
+
+import numpy.typing as npt
 
 from resfo._formatted.write import formatted_write
 from resfo._unformatted.write import unformatted_write
 from resfo.format import Format, check_correct_mode, get_stream
 
-from .types import ArrayValue
+from .types import MessType
 
 
 def write(
-    filelike,
-    contents: Union[Sequence[Tuple[str, ArrayValue]], Dict[str, ArrayValue]],
+    filelike: Union[str, PathLike[str], IO[Any]],
+    contents: Iterable[Tuple[str, Union[npt.ArrayLike, MessType]]],
     fileformat: Format = Format.UNFORMATTED,
-):
+) -> None:
     """
     Write the given contents to the given file in res format.
 

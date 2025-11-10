@@ -53,7 +53,7 @@ read and write ascii (formatted) aswell:
 
 >>> resfo.write(
 ...     "my_grid.fegrid",
-...     {"FILEHEAD": [1], "GRIDHEAD": [10,10,10]},
+...     {"FILEHEAD": [1], "GRIDHEAD": [10,10,10]}.items(),
 ...     fileformat=resfo.Format.FORMATTED
 ... )
 

@@ -1,6 +1,7 @@
 import io
 from enum import Enum, auto, unique
-from pathlib import Path
+from os import PathLike
+from typing import IO, Any, Tuple, Union
 
 
 @unique
@@ -14,7 +15,7 @@ class Format(Enum):
     UNFORMATTED = auto()
 
 
-def guess_format(filelike):
+def guess_format(filelike: Union[str, PathLike[str], IO[Any]]) -> Format:
     """
     Guess the format of a given filelike.
 
@@ -26,7 +27,7 @@ def guess_format(filelike):
     :param filelike: Either a filename, pathlib.Path or opened stream.
     :returns: Either Format.FORMATTED or Format.UNFORMATTED.
     """
-    if isinstance(filelike, (Path, str)):
+    if isinstance(filelike, (PathLike, str)):
         with open(filelike, "rb") as file_handle:
             if int.from_bytes(file_handle.read(4), byteorder="big", signed=True) == 16:
                 return Format.UNFORMATTED
@@ -41,7 +42,9 @@ def guess_format(filelike):
         return Format.FORMATTED
 
 
-def get_stream(filepath, fileformat: Format, mode: str = "r"):
+def get_stream(
+    filepath: Union[str, PathLike[str], IO[Any]], fileformat: Format, mode: str = "r"
+) -> Tuple[IO[Any], bool]:
     """
     Openes the given file with the correct mode (text or binary)
     based on fileformat.
@@ -49,7 +52,7 @@ def get_stream(filepath, fileformat: Format, mode: str = "r"):
     :param fileformat: A resfo.Format.
     :returns: The opened file.
     """
-    if isinstance(filepath, (str, Path)):
+    if isinstance(filepath, (str, PathLike)):
         if fileformat == Format.FORMATTED:
             return open(filepath, mode + "t"), True  # noqa: SIM115
         else:
@@ -58,7 +61,7 @@ def get_stream(filepath, fileformat: Format, mode: str = "r"):
         return filepath, False
 
 
-def check_correct_mode(stream, fileformat: Format):
+def check_correct_mode(stream: IO[Any], fileformat: Format) -> None:
     """
     Checks that the stream is the correct mode (text or binary) for the given
     fileformat.

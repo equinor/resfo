@@ -1,6 +1,6 @@
 from importlib.metadata import PackageNotFoundError, version
 
 try:
-    version = version("resfo")
+    __version__ = version("resfo")
 except PackageNotFoundError:
-    version = "0.0.0"
+    __version__ = "0.0.0"
