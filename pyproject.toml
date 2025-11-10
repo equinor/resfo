@@ -7,7 +7,7 @@ name = "resfo"
 description="A (lazy) parser and writer for reservoir simulator fortran output format."
 readme = "README.md"
 classifiers=[
-    "Development Status :: 1 - Planning",
+    "Development Status :: 6 - Mature",
     "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.10",
