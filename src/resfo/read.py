@@ -1,15 +1,14 @@
-from typing import TYPE_CHECKING, Iterator, List, Optional, Tuple
+from typing import Iterator, List, Optional, Tuple
 
 from resfo._formatted.read import FormattedArray
 from resfo._unformatted.read import UnformattedResArray
 from resfo.array_entry import ResArray
 from resfo.format import Format, check_correct_mode, get_stream, guess_format
 
-if TYPE_CHECKING:
-    from .types import ReadArrayValue
+from .types import ArrayValue
 
 
-def read(*args, **kwargs) -> List[Tuple[str, "ReadArrayValue"]]:
+def read(*args, **kwargs) -> List[Tuple[str, ArrayValue]]:
     """
     Read the contents of a res file and return a list of
     tuples (keyword, array). Takes the same parameters as

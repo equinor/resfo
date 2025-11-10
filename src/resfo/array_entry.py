@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional, Union
+from typing import Optional, Union
 
-if TYPE_CHECKING:
-    from numpy.typing import ArrayLike
+from numpy.typing import ArrayLike
 
-    from .types import ReadArrayValue
+from .types import ArrayValue
 
 
 class ResArray(ABC):
@@ -62,7 +61,7 @@ class ResArray(ABC):
         return self._length  # type: ignore
 
     @abstractmethod
-    def read_array(self) -> "ReadArrayValue":
+    def read_array(self) -> ArrayValue:
         """
         Read the array from the unformatted res file.
 
@@ -82,7 +81,7 @@ class ResArray(ABC):
 
     @abstractmethod
     def update(
-        self, *, keyword: Optional[str] = None, array: Optional["ArrayLike"] = None
+        self, *, keyword: Optional[str] = None, array: Optional[ArrayLike] = None
     ):
         """
         Updates the entry with the given new data.

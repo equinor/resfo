@@ -3,7 +3,7 @@ import resfo.version
 from .errors import ResfoParsingError, ResfoWriteError
 from .format import Format
 from .read import lazy_read, read
-from .types import MESS
+from .types import MESS, MessType, ArrayValue
 from .write import write
 
 __author__ = "Equinor"
@@ -17,6 +17,8 @@ __all__ = [
     "write",
     "Format",
     "MESS",
+    "MessType",
     "ResfoParsingError",
     "ResfoWriteError",
+    "ArrayValue",
 ]

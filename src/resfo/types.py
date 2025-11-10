@@ -24,12 +24,11 @@ that results in a warning.
 """
 
 import warnings
-from typing import TYPE_CHECKING, Union
+from typing import Any, Union
 
 import numpy as np
-
-if TYPE_CHECKING:
-    from numpy.typing import ArrayLike
+import numpy.typing as npt
+from typing_extensions import TypeAlias
 
 # np dtype for res types with fixed width
 static_dtypes = {
@@ -41,7 +40,7 @@ static_dtypes = {
 }
 
 
-class MESS:
+class MessType:
     """
     The MESS value is a sentinell object used to signal that the type of the
     array that is to be written should be an empty array of type MESS.
@@ -50,11 +49,13 @@ class MESS:
     pass
 
 
-ReadArrayValue = Union[np.ndarray, MESS]
-WriteArrayValue = Union["ArrayLike", MESS]
+MESS = MessType()
 
 
-def to_np_type(type_keyword):
+ArrayValue: TypeAlias = Union[npt.NDArray[Any], MessType]
+
+
+def to_np_type(type_keyword: bytes) -> np.dtype:
     """
     :param type_keyword: A bytestring of a res type.
     :returns: A np dtype corresponding to the given
@@ -65,13 +66,13 @@ def to_np_type(type_keyword):
     return static_dtypes.get(type_keyword)
 
 
-def from_np_dtype(array):
+def from_np_dtype(array: ArrayValue) -> bytes:
     """
     :param array: A numpy array
     :returns: The corresponding res type for the
         given numpy array's dtype.
     """
-    if array is MESS:
+    if isinstance(array, MessType):
         return b"MESS"
     dtype = array.dtype
     if dtype == "object":
@@ -109,7 +110,7 @@ def from_np_dtype(array):
     raise ValueError(f"Could not convert numpy type {dtype} in {array}")
 
 
-def is_valid_type(type_str):
+def is_valid_type(type_str: bytes) -> bool:
     """
     :returns: Whether the given byte string is a valid res type.
     """
@@ -120,9 +121,9 @@ def is_valid_type(type_str):
     return type_str[0:2] == b"C0" and all(48 <= kw <= 57 for kw in type_str[2:4])
 
 
-def is_character_type(type_str):
+def is_character_type(type_str: bytes) -> bool:
     """
     :returns: Whether the given byte string as ascii is
         a string res type, ie. b"CHAR" or b"C016".
     """
-    return type_str and type_str[0:1] == b"C"
+    return bool(type_str) and type_str[0:1] == b"C"
