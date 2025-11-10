@@ -1,11 +1,15 @@
+from typing import IO, Optional
+
 import numpy as np
+from numpy.typing import ArrayLike
 
 import resfo.types as res_types
 from resfo.array_entry import ResArray
 from resfo.errors import ResfoParsingError
+from resfo.types import ArrayValue
 
 
-def drop_while_space(stream):
+def drop_while_space(stream: IO[str]) -> None:
     """
     Forwards the stream to the first non-space character.
     Assumes the stream is in text mode.
@@ -21,27 +25,21 @@ class FormattedArray(ResArray):
     An array entry in an formatted res file.
     """
 
-    def __init__(self, stream):
-        self.start = stream.tell()
-        self.stream = stream
-
-        self._keyword = None
-        self._length = None
-        self._type = None
-        self._data_start = None
+    def __init__(self, stream: IO[str]) -> None:
+        super().__init__(stream)
         self._array = None
 
-        self._is_eof = False
-
-    def read_array(self):
+    def read_array(self) -> ArrayValue:
         if self._keyword is None:
             self._read()
         return self._read_array()
 
-    def update(self, *, keyword=None, array=None):
+    def update(
+        self, *, keyword: Optional[str] = None, array: Optional[ArrayLike] = None
+    ) -> None:
         raise NotImplementedError("Update is not implemented for formatted files")
 
-    def _read_logical(self):
+    def _read_logical(self) -> bool:
         """
         Read one fortran logical ('T' or 'F') from
         the beginning of the stream and returns it.
@@ -55,7 +53,7 @@ class FormattedArray(ResArray):
         else:
             raise ResfoParsingError(f"Could not parse logical value {current_char}")
 
-    def _read_quote_separated(self):
+    def _read_quote_separated(self) -> str:
         """
         Read one single-quote delimited string from the
         start of the stream, and returns it.
@@ -79,7 +77,7 @@ class FormattedArray(ResArray):
 
         return word
 
-    def _read_number(self):
+    def _read_number(self) -> str:
         """
         Read one number from the stream and returns it as a string.
         """
@@ -105,13 +103,13 @@ class FormattedArray(ResArray):
 
         return word.replace("D", "E")
 
-    def _read_keyword(self):
+    def _read_keyword(self) -> None:
         self._keyword = self._read_quote_separated()
 
-    def _read_type(self):
+    def _read_type(self) -> None:
         self._type = self._read_quote_separated().encode("ascii")
 
-    def _read_length(self):
+    def _read_length(self) -> None:
         drop_while_space(self.stream)
         self._length = np.fromfile(
             self.stream,
@@ -120,22 +118,25 @@ class FormattedArray(ResArray):
             dtype=np.int32,
         )[0]
 
-    def _read_array(self):
+    def _read_array(self) -> ArrayValue:
+        assert self._data_start is not None
+        assert self._type is not None
+        assert self._length is not None
         self.stream.seek(self._data_start)
         drop_while_space(self.stream)
         if self._type == b"MESS":
             return res_types.MESS
         if res_types.is_character_type(self._type):
-            return np.array([self._read_quote_separated() for i in range(self._length)])
+            return np.array([self._read_quote_separated() for _ in range(self._length)])
         elif self._type == b"LOGI":
-            return np.array([self._read_logical() for i in range(self._length)])
+            return np.array([self._read_logical() for _ in range(self._length)])
         else:
             return np.array(
-                [self._read_number() for i in range(self._length)],
+                [self._read_number() for _ in range(self._length)],
                 dtype=res_types.to_np_type(self._type),
             )
 
-    def _read(self):
+    def _read(self) -> None:
         """
         See resfo.array_entry.ResArray._read()
         """

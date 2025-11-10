@@ -1,17 +1,22 @@
 import warnings
+from typing import IO, Any, Iterable, List, Tuple, Union
 
 import numpy as np
+import numpy.typing as npt
 
 import resfo.types as res_types
 from resfo._unformatted.common import group_len, item_size
 from resfo.errors import ResfoWriteError
+from resfo.types import MessType
 
 
-def write_array_header(stream, kw_str, type_str, size):
+def write_array_header(
+    stream: IO[bytes], kw_str: str, type_str: bytes, size: int
+) -> None:
     if len(kw_str) != 8:
         raise ResfoWriteError("keywords must have length exactly size 8")
     if not res_types.is_valid_type(type_str):
-        raise ResfoWriteError(f"Not a valid res type: {type_str}")
+        raise ResfoWriteError(f"Not a valid res type: {str(type_str)}")
 
     if size > 2**31:
         write_array_header(stream, kw_str, b"X231", -(size // (2**31)))
@@ -24,7 +29,7 @@ def write_array_header(stream, kw_str, type_str, size):
     stream.write((16).to_bytes(4, byteorder="big", signed=True))
 
 
-def cast_array_to_res(arr):
+def cast_array_to_res(arr: npt.NDArray[Any]) -> npt.NDArray[Any]:
     if arr.dtype.type in [np.int32, np.float32, np.float64]:
         return arr.astype(arr.dtype.newbyteorder(">"))
     if np.issubdtype(arr.dtype, np.bool_):
@@ -40,7 +45,7 @@ def cast_array_to_res(arr):
     return arr.astype(result_dtype)
 
 
-def write_np_array(stream, arr):
+def write_np_array(stream: IO[bytes], arr: npt.ArrayLike) -> None:
     arr = np.asarray(arr)
     res_type = res_types.from_np_dtype(arr)
     if res_type == b"C008":
@@ -48,6 +53,8 @@ def write_np_array(stream, arr):
     g_len = group_len(res_type)
     to_write = len(arr)
     type_len = item_size(res_type)
+    if type_len is None:
+        raise ValueError(f"Unknown type {str(res_type)}")
     have_written = 0
     arr = cast_array_to_res(arr)
     while to_write > 0:
@@ -60,8 +67,10 @@ def write_np_array(stream, arr):
         stream.write(bytes_to_write.to_bytes(4, byteorder="big", signed=True))
 
 
-def write_str_list(stream, str_list, res_type):
+def write_str_list(stream: IO[bytes], str_list: List[str], res_type: bytes) -> None:
     str_size = item_size(res_type)
+    if str_size is None:
+        raise ValueError(f"Unknown type {str(res_type)}")
     if len(str_list) == 0:
         return
     max_len = max(len(s) for s in str_list)
@@ -84,6 +93,8 @@ def write_str_list(stream, str_list, res_type):
     g_len = group_len(res_type)
     to_write = len(byte_str_list)
     type_len = item_size(res_type)
+    if type_len is None:
+        raise ValueError(f"Unknown type {type_len}")
     have_written = 0
     while to_write > 0:
         write_now = min(g_len, to_write)
@@ -96,7 +107,9 @@ def write_str_list(stream, str_list, res_type):
         stream.write(bytes_to_write.to_bytes(4, byteorder="big", signed=True))
 
 
-def write_array_like(stream, keyword, array_like):
+def write_array_like(
+    stream: IO[bytes], keyword: str, array_like: Union[npt.ArrayLike, MessType]
+) -> None:
     array = np.asarray(array_like)
     try:
         res_type = res_types.from_np_dtype(array)
@@ -113,9 +126,9 @@ def write_array_like(stream, keyword, array_like):
         write_np_array(stream, array)
 
 
-def unformatted_write(stream, keyworded_arrays):
-    iterator = keyworded_arrays
-    if hasattr(keyworded_arrays, "items"):
-        iterator = keyworded_arrays.items()
-    for keyword, array in iterator:
+def unformatted_write(
+    stream: IO[bytes],
+    keyworded_arrays: Iterable[Tuple[str, Union[npt.ArrayLike, MessType]]],
+) -> None:
+    for keyword, array in keyworded_arrays:
         write_array_like(stream, keyword, array)

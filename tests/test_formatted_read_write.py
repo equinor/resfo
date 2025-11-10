@@ -6,7 +6,6 @@ from resfo._formatted.write import formatted_write
 
 
 @pytest.mark.filterwarnings("ignore:downcasting")
-@pytest.mark.parametrize("container", [dict, lambda x: x])
 @pytest.mark.parametrize(
     "data",
     [
@@ -23,9 +22,9 @@ from resfo._formatted.write import formatted_write
         ],
     ],
 )
-def test_formatted_write(container, data, tmp_path):
+def test_formatted_write(data, tmp_path):
     with (tmp_path / "test.data").open("wt") as fh:
-        formatted_write(fh, container(data))
+        formatted_write(fh, data)
 
     with (tmp_path / "test.data").open("rt") as fh:
         out_records = list(FormattedArray.parse(fh))

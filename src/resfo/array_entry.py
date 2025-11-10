@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Union
+from typing import IO, Any, Iterator, Optional, Union
 
 from numpy.typing import ArrayLike
+from typing_extensions import Self
 
 from .types import ArrayValue
 
@@ -14,7 +15,7 @@ class ResArray(ABC):
     generated e.g. :py:meth:`resfo.lazy_read`.
     """
 
-    def __init__(self, stream):
+    def __init__(self, stream: IO[Any]) -> None:
         """
         :param stream: The opened res file with stream.peek() at
             the start of the res array.
@@ -22,15 +23,15 @@ class ResArray(ABC):
         self.start = stream.tell()
         self.stream = stream
 
-        self._keyword = None
-        self._length = None
-        self._type = None
-        self._data_start = None
+        self._keyword: Optional[str] = None
+        self._length: Optional[int] = None
+        self._type: Optional[bytes] = None
+        self._data_start: Optional[int] = None
 
         self._is_eof = False
 
     @property
-    def is_eof(self):
+    def is_eof(self) -> bool:
         """
         Whether the position of the array is actually
         at the end of the file, in which case its keyword
@@ -82,7 +83,7 @@ class ResArray(ABC):
     @abstractmethod
     def update(
         self, *, keyword: Optional[str] = None, array: Optional[ArrayLike] = None
-    ):
+    ) -> None:
         """
         Updates the entry with the given new data.
 
@@ -98,7 +99,7 @@ class ResArray(ABC):
         pass
 
     @abstractmethod
-    def _read(self):
+    def _read(self) -> None:
         """
         Reads the array entry. Guarantees that after, either entry.is_eof() and
         the stream.peek() is at the end of the file or stream.peek() will be at
@@ -107,7 +108,7 @@ class ResArray(ABC):
         pass
 
     @classmethod
-    def parse(cls, stream):
+    def parse(cls, stream: IO[Any]) -> Iterator[Self]:
         """
         Parse an res file from the given opened file handle.
 

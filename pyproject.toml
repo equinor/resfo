@@ -52,6 +52,9 @@ dev = [
 
 [tool.setuptools_scm]
 
+[tool.setuptools.package-data]
+"resfo" = ["py.typed", "*.pyi", "**/*.pyi"]
+
 [tool.ruff]
 src = ["src"]
 line-length = 88

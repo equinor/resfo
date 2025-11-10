@@ -1,10 +1,14 @@
+from typing import IO, Any, Iterable, List, Tuple, Union
+
 import numpy as np
+import numpy.typing as npt
 
 import resfo.types as res_types
 from resfo.errors import ResfoWriteError
+from resfo.types import MessType
 
 
-def write_str_list(stream, str_list):
+def write_str_list(stream: IO[str], str_list: List[str]) -> None:
     """
     Writes the given list of strings to the res file.
     The strings will have the length of the longest string,
@@ -21,7 +25,7 @@ def write_str_list(stream, str_list):
         stream.write(f" '{string.ljust(max_len)}'")
 
 
-def write_np_array(stream, array, res_type):
+def write_np_array(stream: IO[str], array: Iterable[Any], res_type: bytes) -> None:
     """
     Writes the given numpy array to the stream as
     the given res_type.
@@ -55,7 +59,9 @@ def write_np_array(stream, array, res_type):
             stream.write(" {:>11d}".format(ele))
 
 
-def write_entry(stream, keyword, array_like):
+def write_entry(
+    stream: IO[str], keyword: str, array_like: Union[npt.ArrayLike, MessType]
+) -> None:
     """
     Write the given array/keyword entry to the
     stream in the formatted res file format.
@@ -85,7 +91,10 @@ def write_entry(stream, keyword, array_like):
         write_np_array(stream, array, res_type)
 
 
-def formatted_write(stream, keyworded_arrays):
+def formatted_write(
+    stream: IO[str],
+    keyworded_arrays: Iterable[Tuple[str, Union[npt.ArrayLike, MessType]]],
+) -> None:
     """
     Writes the list of data entries to the stream as
     formatted res.
@@ -95,8 +104,6 @@ def formatted_write(stream, keyworded_arrays):
         of keyword: array pairs.
     """
     iterator = keyworded_arrays
-    if hasattr(keyworded_arrays, "items"):
-        iterator = keyworded_arrays.items()
     for keyword, array in iterator:
         write_entry(stream, keyword, array)
         stream.write("\n")

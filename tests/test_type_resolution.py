@@ -40,7 +40,7 @@ def test_formatted_write_type_resolution(tmp_path, data, expected_type):
     file = tmp_path / "test.txt"
 
     with file.open("w") as f:
-        resfo.write(f, {"SPECGRID": data}, resfo.Format.FORMATTED)
+        resfo.write(f, [("SPECGRID", data)], resfo.Format.FORMATTED)
 
     assert expected_type in file.read_text()
 
@@ -115,6 +115,6 @@ def test_unformatted_write_type_resolution(tmp_path, data, expected_type):
     file = tmp_path / "test.txt"
 
     with file.open("wb") as f:
-        resfo.write(f, {"SPECGRID": data}, resfo.Format.UNFORMATTED)
+        resfo.write(f, [("SPECGRID", data)], resfo.Format.UNFORMATTED)
 
     assert expected_type in file.read_bytes()
