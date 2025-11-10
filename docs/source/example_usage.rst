@@ -82,13 +82,26 @@ For better control, one can pass the opened file:
 ...     print(item.read_keyword())
 FILEHEAD
 
-Writing MESS
-------------
+Dealing with MESS
+-----------------
 
 The special MESS types keyword can be written as follows:
 
 
 >>> resfo.write("output.EGRID", [("MESSHEAD", resfo.MESS)])
+
+The sentinel value MESS is of type MessType. This is quite often
+not a typically used value, so one will want to invalidate it like this:
+
+
+>>> import numpy.typing as npt
+>>> from typing import Any
+>>>
+>>>
+>>> def validate_array(array: resfo.ArrayValue) -> npt.NDArray[Any]:
+...     if isinstance(array, resfo.MessType):
+...         raise ValueError()
+...     return array
 
 array types
 -----------

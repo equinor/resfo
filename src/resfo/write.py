@@ -4,12 +4,12 @@ from resfo._formatted.write import formatted_write
 from resfo._unformatted.write import unformatted_write
 from resfo.format import Format, check_correct_mode, get_stream
 
-from .types import WriteArrayValue
+from .types import ArrayValue
 
 
 def write(
     filelike,
-    contents: Union[Sequence[Tuple[str, WriteArrayValue]], Dict[str, WriteArrayValue]],
+    contents: Union[Sequence[Tuple[str, ArrayValue]], Dict[str, ArrayValue]],
     fileformat: Format = Format.UNFORMATTED,
 ):
     """
