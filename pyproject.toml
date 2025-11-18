@@ -8,7 +8,6 @@ description="A (lazy) parser and writer for reservoir simulator fortran output f
 readme = "README.md"
 classifiers=[
     "Development Status :: 6 - Mature",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -26,9 +25,7 @@ authors = [
 maintainers = [
     {name="Eivind Jahren", email="ejah@equinor.com"},
 ]
-
-[project.license]
-text = "LGPL-3.0"
+license = "LGPL-3.0-or-later"
 
 [project.urls]
 "Homepage" = "https://github.com/equinor/resfo"
