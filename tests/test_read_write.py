@@ -15,7 +15,7 @@ def same_keyword(a, b):
 @given(file_format=formats, data=resfo_datas)
 def test_read_write(filelike, file_format, data):
     write(filelike, data, fileformat=file_format)
-    for (kw, arr), (okw, oarr) in zip(data, read(filelike)):
+    for (kw, arr), (okw, oarr) in zip(data, read(filelike), strict=True):
         assert same_keyword(kw, okw)
         if arr is MESS and oarr is MESS:
             continue

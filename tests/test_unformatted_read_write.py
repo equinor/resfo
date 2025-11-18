@@ -41,10 +41,10 @@ def test_unformatted_write(data):
 
     assert out_lengths == [len(arr) for arr in out_arrays]
 
-    for (kw, arr), okw, oarr in zip(data, out_keywords, out_arrays):
+    for (kw, arr), okw, oarr in zip(data, out_keywords, out_arrays, strict=True):
         assert kw == okw
         if isinstance(arr[0], str):
-            for el, elo in zip(arr, oarr):
+            for el, elo in zip(arr, oarr, strict=True):
                 elo = elo.decode("ascii")
                 assert elo.startswith(el)
                 assert all(c.isspace() for c in elo[len(el) :])

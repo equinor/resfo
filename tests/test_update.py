@@ -17,7 +17,7 @@ def test_update(filelike, data):
 
     write(filelike, data_zeros)
     with open(filelike, "br+") as stream:
-        for entry, (kw, arr) in zip(lazy_read(stream), data):
+        for entry, (kw, arr) in zip(lazy_read(stream), data, strict=True):
             assert kw == entry.read_keyword()
             entry.update(keyword="NEW_NAME")
             assert entry.read_array().tolist() == [0] * arr.size
@@ -54,10 +54,10 @@ def test_update_incorrect_mode_raises(filelike):
 def test_update_preserves_type(filelike, data):
     write(filelike, data)
     with open(filelike, "br+") as stream:
-        for (kw, arr), entry in zip(data, lazy_read(stream)):
+        for (kw, arr), entry in zip(data, lazy_read(stream), strict=True):
             entry.update(keyword=kw, array=arr)
 
-    for (kw, arr), (okw, oarr) in zip(data, read(filelike)):
+    for (kw, arr), (okw, oarr) in zip(data, read(filelike), strict=True):
         assert kw == okw
         if arr is MESS:
             continue
