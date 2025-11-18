@@ -34,7 +34,7 @@ def test_formatted_write(data, tmp_path):
 
     assert out_lengths == [len(arr) for arr in out_arrays]
 
-    for (kw, arr), okw, oarr in zip(data, out_keywords, out_arrays):
+    for (kw, arr), okw, oarr in zip(data, out_keywords, out_arrays, strict=True):
         assert kw == okw
         if isinstance(arr[0], bytes):
             assert np.array_equal([el.decode("ascii") for el in arr], oarr)
