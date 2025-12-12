@@ -15,6 +15,17 @@ class ResArray(ABC):
     generated e.g. :py:meth:`resfo.lazy_read`.
     """
 
+    __slots__ = (
+        "start",
+        "stream",
+        "_keyword",
+        "_length",
+        "_type",
+        "_data_start",
+        "_is_eof",
+        "_array",
+    )
+
     def __init__(self, stream: IO[Any]) -> None:
         """
         :param stream: The opened res file with stream.peek() at
@@ -27,8 +38,8 @@ class ResArray(ABC):
         self._length: Optional[int] = None
         self._type: Optional[bytes] = None
         self._data_start: Optional[int] = None
-
         self._is_eof = False
+        self._array: Optional[ArrayValue] = None
 
     @property
     def is_eof(self) -> bool:

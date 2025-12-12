@@ -25,10 +25,6 @@ class FormattedArray(ResArray):
     An array entry in an formatted res file.
     """
 
-    def __init__(self, stream: IO[str]) -> None:
-        super().__init__(stream)
-        self._array = None
-
     def read_array(self) -> ArrayValue:
         if self._keyword is None:
             self._read()
