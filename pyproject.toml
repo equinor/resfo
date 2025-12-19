@@ -56,14 +56,14 @@ line-length = 88
 
 [tool.ruff.lint]
 select = [
-  "W",  # pycodestyle
-  "I",  # isort
   "B",  # flake-8-bugbear
-  "SIM",  # flake-8-simplify
-  "F",  # pyflakes
-  "PL",  # pylint
-  "NPY",  # numpy specific rules
   "C4",  # flake8-comprehensions
+  "F",  # pyflakes
+  "I",  # isort
+  "NPY",  # numpy specific rules
+  "PL",  # pylint
+  "SIM",  # flake-8-simplify
+  "W",  # pycodestyle
 ]
 preview = true
 ignore = ["PLW2901",  # redefined-loop-name
