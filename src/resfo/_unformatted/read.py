@@ -47,22 +47,31 @@ class UnformattedResArray(ResArray):
                 f"but reached end-of-file after {len(buffer)}"
             )
         g_len = group_len(self._type)
-        array = np.empty(shape=(self._length,), dtype=np_type)
+        # Slicing a memoryview does not copy, so the data of each group is
+        # gathered without intermediate copies into one writable bytearray
+        view = memoryview(buffer)
+        groups = []
         position = 0
-        have_read = 0
         to_read = self._length
         while to_read > 0:
             read_now = min(g_len, to_read)
             to_read -= read_now
             bytes_to_read = type_len * read_now
             data_end = position + 4 + bytes_to_read
-            self._check_record_marker(buffer[position : position + 4], bytes_to_read)
-            array[have_read : have_read + read_now] = np.frombuffer(
-                buffer, dtype=np_type, count=read_now, offset=position + 4
-            )
-            self._check_record_marker(buffer[data_end : data_end + 4], bytes_to_read)
+            marker = bytes_to_read.to_bytes(4, "big", signed=True)
+            if (
+                view[position : position + 4] != marker
+                or view[data_end : data_end + 4] != marker
+            ):
+                self._check_record_marker(
+                    buffer[position : position + 4], bytes_to_read
+                )
+                self._check_record_marker(
+                    buffer[data_end : data_end + 4], bytes_to_read
+                )
+            groups.append(view[position + 4 : data_end])
             position = data_end + 4
-            have_read += read_now
+        array = np.frombuffer(bytearray().join(groups), dtype=np_type)
 
         if self._type == b"LOGI":
             array = array.astype(np.bool_)
