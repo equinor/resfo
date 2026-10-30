@@ -1,4 +1,5 @@
 import io
+import struct
 from typing import Optional
 
 import numpy as np
@@ -9,6 +10,8 @@ from resfo._unformatted.common import bytes_in_array, group_len, item_size
 from resfo._unformatted.write import write_array_like
 from resfo.array_entry import ResArray
 from resfo.errors import ResfoParsingError
+
+_HEADER = struct.Struct(">i8si4si")
 
 
 class UnformattedResArray(ResArray):
@@ -137,6 +140,16 @@ class UnformattedResArray(ResArray):
         See resfo.array_entry.ResArray._read()
         """
         self.stream.seek(self.start)
+        header = self.stream.read(_HEADER.size)
+        if len(header) == _HEADER.size:
+            start, keyword, length, type_, end = _HEADER.unpack(header)
+            if start == 16 and end == 16 and type_ != b"X231":
+                self._keyword = keyword.decode("ascii")
+                self._length = length
+                self._type = type_
+                self._skip_data()
+                return
+        self.stream.seek(self.start)
         start_marker = self.stream.read(4)
         if not start_marker:
             self._is_eof = True
@@ -164,7 +177,13 @@ class UnformattedResArray(ResArray):
             self._length += self._read_length()
             self._read_type()
             self._read_record_marker(16)
+        self._skip_data()
 
+    def _skip_data(self) -> None:
+        """
+        Checks the type and length of the array and moves
+        the stream past the data.
+        """
         type_len = item_size(self._type)
         if self._length == 0:
             type_len = 0
