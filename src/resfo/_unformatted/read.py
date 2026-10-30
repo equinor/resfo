@@ -1,4 +1,5 @@
 import io
+import struct
 from typing import Optional
 
 import numpy as np
@@ -9,6 +10,8 @@ from resfo._unformatted.common import bytes_in_array, group_len, item_size
 from resfo._unformatted.write import write_array_like
 from resfo.array_entry import ResArray
 from resfo.errors import ResfoParsingError
+
+_HEADER = struct.Struct(">i8si4si")
 
 
 class UnformattedResArray(ResArray):
@@ -44,22 +47,31 @@ class UnformattedResArray(ResArray):
                 f"but reached end-of-file after {len(buffer)}"
             )
         g_len = group_len(self._type)
-        array = np.empty(shape=(self._length,), dtype=np_type)
+        # Slicing a memoryview does not copy, so the data of each group is
+        # gathered without intermediate copies into one writable bytearray
+        view = memoryview(buffer)
+        groups = []
         position = 0
-        have_read = 0
         to_read = self._length
         while to_read > 0:
             read_now = min(g_len, to_read)
             to_read -= read_now
             bytes_to_read = type_len * read_now
             data_end = position + 4 + bytes_to_read
-            self._check_record_marker(buffer[position : position + 4], bytes_to_read)
-            array[have_read : have_read + read_now] = np.frombuffer(
-                buffer, dtype=np_type, count=read_now, offset=position + 4
-            )
-            self._check_record_marker(buffer[data_end : data_end + 4], bytes_to_read)
+            marker = bytes_to_read.to_bytes(4, "big", signed=True)
+            if (
+                view[position : position + 4] != marker
+                or view[data_end : data_end + 4] != marker
+            ):
+                self._check_record_marker(
+                    buffer[position : position + 4], bytes_to_read
+                )
+                self._check_record_marker(
+                    buffer[data_end : data_end + 4], bytes_to_read
+                )
+            groups.append(view[position + 4 : data_end])
             position = data_end + 4
-            have_read += read_now
+        array = np.frombuffer(bytearray().join(groups), dtype=np_type)
 
         if self._type == b"LOGI":
             array = array.astype(np.bool_)
@@ -137,6 +149,16 @@ class UnformattedResArray(ResArray):
         See resfo.array_entry.ResArray._read()
         """
         self.stream.seek(self.start)
+        header = self.stream.read(_HEADER.size)
+        if len(header) == _HEADER.size:
+            start, keyword, length, type_, end = _HEADER.unpack(header)
+            if start == 16 and end == 16 and type_ != b"X231":
+                self._keyword = keyword.decode("ascii")
+                self._length = length
+                self._type = type_
+                self._skip_data()
+                return
+        self.stream.seek(self.start)
         start_marker = self.stream.read(4)
         if not start_marker:
             self._is_eof = True
@@ -164,7 +186,13 @@ class UnformattedResArray(ResArray):
             self._length += self._read_length()
             self._read_type()
             self._read_record_marker(16)
+        self._skip_data()
 
+    def _skip_data(self) -> None:
+        """
+        Checks the type and length of the array and moves
+        the stream past the data.
+        """
         type_len = item_size(self._type)
         if self._length == 0:
             type_len = 0
