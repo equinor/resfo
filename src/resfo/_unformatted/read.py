@@ -28,29 +28,38 @@ class UnformattedResArray(ResArray):
         assert self._data_start is not None
         assert self._type is not None
         assert self._length is not None
-        self.stream.seek(self._data_start)
-        g_len = group_len(self._type)
         np_type = res_types.to_np_type(self._type)
-        array = np.zeros(shape=(self._length,), dtype=np_type)
-        to_read = self._length
         type_len = item_size(self._type)
         if type_len is None:
             raise ResfoParsingError(f"Unknown type {str(type_len)}")
+        total_bytes = bytes_in_array(self._length, self._type)
+        assert total_bytes is not None
+        self.stream.seek(self._data_start)
+        # The array is read in one go, and the record markers
+        # are then checked and stripped from the buffer
+        buffer = self.stream.read(total_bytes)
+        if len(buffer) != total_bytes:
+            raise ResfoParsingError(
+                f"Could not read array: expected {total_bytes} bytes "
+                f"but reached end-of-file after {len(buffer)}"
+            )
+        g_len = group_len(self._type)
+        array = np.empty(shape=(self._length,), dtype=np_type)
+        position = 0
         have_read = 0
+        to_read = self._length
         while to_read > 0:
             read_now = min(g_len, to_read)
             to_read -= read_now
             bytes_to_read = type_len * read_now
-            self._read_record_marker(bytes_to_read)
-            try:
-                group_array = np.frombuffer(
-                    self.stream.read(bytes_to_read), dtype=np_type, count=read_now
-                )
-            except ValueError as error:
-                raise ResfoParsingError(f"Could not read array: {error}") from error
-            array[have_read : have_read + read_now] = group_array
+            data_end = position + 4 + bytes_to_read
+            self._check_record_marker(buffer[position : position + 4], bytes_to_read)
+            array[have_read : have_read + read_now] = np.frombuffer(
+                buffer, dtype=np_type, count=read_now, offset=position + 4
+            )
+            self._check_record_marker(buffer[data_end : data_end + 4], bytes_to_read)
+            position = data_end + 4
             have_read += read_now
-            self._read_record_marker(bytes_to_read)
 
         if self._type == b"LOGI":
             array = array.astype(np.bool_)
@@ -85,7 +94,11 @@ class UnformattedResArray(ResArray):
         Read 4 bytes and check that it matches the
         expected fortan header/footer
         """
-        value = int.from_bytes(self.stream.read(4), byteorder="big", signed=True)
+        self._check_record_marker(self.stream.read(4), expected_value)
+
+    @staticmethod
+    def _check_record_marker(marker: bytes, expected_value: int) -> None:
+        value = int.from_bytes(marker, byteorder="big", signed=True)
         if value != expected_value:
             raise ResfoParsingError(
                 f"Unexpected size of record {value} ({str(value.to_bytes(4, byteorder='big', signed=True))})"

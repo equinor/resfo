@@ -282,3 +282,47 @@ def test_truncated_file_raises_parse_error():
     buf.truncate(100)
     with pytest.raises(resfo.ResfoParsingError, match="Could not read array"):
         _ = resfo.read(buf)
+
+
+@pytest.mark.parametrize("size", [0, 1, 999, 1000, 1001, 2500])
+@pytest.mark.parametrize(
+    "values",
+    [
+        lambda n: np.arange(n, dtype=np.int32),
+        lambda n: np.arange(n, dtype=np.float32),
+        lambda n: np.arange(n, dtype=np.float64),
+        lambda n: np.arange(n) % 2 == 0,
+        lambda n: np.array([b"ABCDEFGH"] * n, dtype="|S8"),
+        lambda n: np.array([b"x" * 16] * n, dtype="|S16"),
+    ],
+)
+def test_unformatted_read_groups_roundtrip(size, values):
+    expected = values(size)
+    buf = io.BytesIO()
+    resfo.write(buf, [("KEYWORD1", expected)])
+    buf.seek(0)
+    ((_, array),) = resfo.read(buf)
+    assert np.array_equal(array, expected)
+
+
+@pytest.mark.parametrize("offset", [-1, 1])
+def test_unformatted_read_bad_marker_in_second_group(offset):
+    buf = io.BytesIO()
+    resfo.write(buf, [("KEYWORD1", np.zeros(1500, dtype=np.float32))])
+    data = bytearray(buf.getvalue())
+    # header is 24 bytes, the first group is 4 + 4000 + 4 bytes
+    second_group_start = 24 + 4008
+    data[second_group_start : second_group_start + 4] = (2000 + offset).to_bytes(
+        4, "big"
+    )
+    arr = uread.UnformattedResArray(io.BytesIO(bytes(data)))
+    with pytest.raises(uread.ResfoParsingError, match="size of record"):
+        arr.read_array()
+
+
+def test_unformatted_read_truncated_array():
+    buf = io.BytesIO()
+    resfo.write(buf, [("KEYWORD1", np.zeros(1500, dtype=np.float32))])
+    arr = uread.UnformattedResArray(io.BytesIO(buf.getvalue()[:-10]))
+    with pytest.raises(uread.ResfoParsingError):
+        arr.read_array()
