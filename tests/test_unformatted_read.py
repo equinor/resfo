@@ -326,3 +326,15 @@ def test_unformatted_read_truncated_array():
     arr = uread.UnformattedResArray(io.BytesIO(buf.getvalue()[:-10]))
     with pytest.raises(uread.ResfoParsingError):
         arr.read_array()
+
+
+def test_unformatted_negative_array_size():
+    buf = io.BytesIO(
+        (16).to_bytes(4, byteorder="big", signed=True)
+        + b"KEYWORD1"
+        + (-6).to_bytes(4, byteorder="big", signed=True)
+        + b"INTE"
+        + (16).to_bytes(4, byteorder="big", signed=True)
+    )
+    with pytest.raises(resfo.ResfoParsingError, match="Negative array length"):
+        list(resfo.lazy_read(buf))

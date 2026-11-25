@@ -153,6 +153,8 @@ class UnformattedResArray(ResArray):
         if len(header) == _HEADER.size:
             start, keyword, length, type_, end = _HEADER.unpack(header)
             if start == 16 and end == 16 and type_ != b"X231":
+                if length < 0:
+                    raise ResfoParsingError(f"Negative array length {length}")
                 self._keyword = keyword.decode("ascii")
                 self._length = length
                 self._type = type_
@@ -172,6 +174,8 @@ class UnformattedResArray(ResArray):
         self._length = self._read_length()
         self._read_type()
         self._read_record_marker(16)
+        if self._length < 0 and self._type != b"X231":
+            raise ResfoParsingError(f"Negative array length {self._length}")
         if self._type == b"X231":
             self._read_record_marker(16)
             self._length *= -(2**31)
@@ -207,6 +211,8 @@ class UnformattedResArray(ResArray):
         bytes_to_skip = bytes_in_array(self._length, self._type)
         if bytes_to_skip is None:
             raise ResfoParsingError(f"Unknown type {str(self._type)}")
+        if bytes_to_skip < 0:
+            raise ResfoParsingError("Negative number of bytes to skip")
 
         self._data_start = self.stream.tell()
         self.stream.seek(bytes_to_skip, io.SEEK_CUR)
